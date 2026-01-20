@@ -98,6 +98,7 @@
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		CA4932D32F1EBCD3000A1FC6 /* Resources */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Resources; sourceTree = "<group>"; };
+		CA4932E32F1FCACD000A1FC6 /* Features */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Features; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -150,6 +151,7 @@
 		ABC5E16A2C31F5AF002B4068 /* iOS-FakeNFT-Extended */ = {
 			isa = PBXGroup;
 			children = (
+				CA4932E32F1FCACD000A1FC6 /* Features */,
 				ABC5E16B2C31F5AF002B4068 /* iOS_FakeNFT_ExtendedApp.swift */,
 				ABC5E1952C31F64A002B4068 /* DesignSystem */,
 				ABC5E19A2C31F687002B4068 /* Foundation */,
@@ -321,6 +323,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				CA4932D32F1EBCD3000A1FC6 /* Resources */,
+				CA4932E32F1FCACD000A1FC6 /* Features */,
 			);
 			name = "iOS-FakeNFT-Extended";
 			packageProductDependencies = (
