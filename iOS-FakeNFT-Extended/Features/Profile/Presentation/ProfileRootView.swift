@@ -8,7 +8,11 @@
 import SwiftUI
 
 struct ProfileRootView: View {
-    @State private var viewModel = ProfileViewModel()
+    @State private var viewModel: ProfileViewModel
+
+    init(viewModel: ProfileViewModel) {
+        _viewModel = State(initialValue: viewModel)
+    }
 
     var body: some View {
         NavigationStack(path: $viewModel.path) {
@@ -20,13 +24,9 @@ struct ProfileRootView: View {
     @ViewBuilder
     private func destination(for route: ProfileRoute) -> some View {
         switch route {
-        case .myNfts:
+        case .myNfts, .favourites, .editProfile:
             EmptyView()
-        case .favourites:
-            EmptyView()
-        case .editProfile:
-            EmptyView()
-        case .website(let url):
+        case .website( _):
             EmptyView()
         }
     }

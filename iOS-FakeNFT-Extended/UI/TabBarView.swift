@@ -11,12 +11,9 @@ struct TabBarView: View {
                     )
                 }
 
-            ProfileRootView()
+            ProfileTabView()
                 .tabItem {
-                    Label(
-                        NSLocalizedString("Tab.profile", comment: ""),
-                        image: .icProfileTabBar
-                    )
+                    Label(NSLocalizedString("Tab.profile", comment: ""), image: .icProfileTabBar)
                 }
         }
     }

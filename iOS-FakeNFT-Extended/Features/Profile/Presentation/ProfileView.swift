@@ -9,9 +9,11 @@ import SwiftUI
 
 struct ProfileView: View {
     let viewModel: ProfileViewModel
-    
+
     var body: some View {
         Color.clear
+            .task {
+                await viewModel.load()
+            }
     }
 }
-
