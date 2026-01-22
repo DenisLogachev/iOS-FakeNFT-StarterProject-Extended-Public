@@ -26,8 +26,8 @@ struct ProfileRootView: View {
         switch route {
         case .myNfts, .favourites, .editProfile:
             EmptyView()
-        case .website( _):
-            EmptyView()
+        case .website(let url):
+            AppWebView(url: url)
         }
     }
 }
