@@ -9,7 +9,6 @@ import SwiftUI
 
 enum ProfileState: Sendable {
     case idle
-    case loading
     case loaded(Profile)
 }
 
@@ -18,6 +17,7 @@ enum ProfileState: Sendable {
 final class ProfileViewModel {
     var path: [ProfileRoute] = []
     var state: ProfileState = .idle
+    var isLoading: Bool = false
 
     private let service: ProfileService
     private let profileId: Int
@@ -32,19 +32,15 @@ final class ProfileViewModel {
         guard !hasLoaded else { return }
         hasLoaded = true
 
-        let hadCachedData: Bool
         if let cached = await service.cachedProfile(id: profileId) {
             state = .loaded(cached)
-            hadCachedData = true
-        } else {
-            state = .loading
-            hadCachedData = false
         }
+
+        isLoading = true
+        defer { isLoading = false }
 
         if let fresh = await service.fetchProfile(id: profileId) {
             state = .loaded(fresh)
-        } else if !hadCachedData {
-            state = .idle
         }
     }
 }
