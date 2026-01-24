@@ -6,6 +6,21 @@ enum NetworkClientError: Error {
     case urlSessionError
     case parsingError
     case incorrectRequest(String)
+
+    var isNoInternet: Bool {
+        guard case .urlRequestError(let error) = self,
+              let urlError = error as? URLError else { return false }
+        return urlError.code == .notConnectedToInternet
+            || urlError.code == .networkConnectionLost
+            || urlError.code == .cannotFindHost
+            || urlError.code == .cannotConnectToHost
+    }
+
+    var isTimedOut: Bool {
+        guard case .urlRequestError(let error) = self,
+              let urlError = error as? URLError else { return false }
+        return urlError.code == .timedOut
+    }
 }
 
 protocol NetworkClient {
@@ -30,14 +45,23 @@ actor DefaultNetworkClient: NetworkClient {
 
     func send(request: NetworkRequest) async throws -> Data {
         let urlRequest = try create(request: request)
-        let (data, response) = try await session.data(for: urlRequest)
-        guard let response = response as? HTTPURLResponse else {
-            throw NetworkClientError.urlSessionError
+
+        do {
+            let (data, response) = try await session.data(for: urlRequest)
+
+            guard let response = response as? HTTPURLResponse else {
+                throw NetworkClientError.urlSessionError
+            }
+            guard 200 ..< 300 ~= response.statusCode else {
+                throw NetworkClientError.httpStatusCode(response.statusCode)
+            }
+
+            return data
+        } catch let urlError as URLError {
+            throw NetworkClientError.urlRequestError(urlError)
+        } catch {
+            throw NetworkClientError.urlRequestError(error)
         }
-        guard 200 ..< 300 ~= response.statusCode else {
-            throw NetworkClientError.httpStatusCode(response.statusCode)
-        }
-        return data
     }
 
     func send<T: Decodable>(request: NetworkRequest) async throws -> T {
