@@ -1,16 +1,14 @@
 import SwiftUI
 
 struct TabBarView: View {
+    @Environment(ServicesAssembly.self) private var servicesAssembly
+
     var body: some View {
         TabView {
-            TestCatalogView()
+            ProfileTabView(profileService: servicesAssembly.profileService)
                 .tabItem {
-                    Label(
-                        NSLocalizedString("Tab.catalog", comment: ""),
-                        systemImage: "square.stack.3d.up.fill"
-                    )
+                    Label(NSLocalizedString("Tab.profile", comment: ""), image: .icProfileTabBar)
                 }
-                .backgroundStyle(.background)
         }
     }
 }
