@@ -20,7 +20,6 @@ struct WebView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: WKWebView, context: Context) {
-        // Ничего не делаем: URL задаём один раз при создании
     }
 
     func makeCoordinator() -> Coordinator {

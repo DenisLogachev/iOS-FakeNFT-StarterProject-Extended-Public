@@ -16,7 +16,6 @@ struct AppWebView: View {
         ZStack {
             WebView(url: url, isLoading: $isLoading)
                 .ignoresSafeArea()
-                .toolbar(.hidden, for: .tabBar)
                 .navigationBarBackButtonHidden(true)
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
