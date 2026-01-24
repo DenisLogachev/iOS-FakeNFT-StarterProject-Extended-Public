@@ -8,20 +8,15 @@
 import SwiftUI
 
 struct ProfileTabView: View {
-    @Environment(ServicesAssembly.self) private var servicesAssembly
-    @State private var viewModel: ProfileViewModel?
+    @State private var viewModel: ProfileViewModel
+
+    init(profileService: ProfileService, profileId: Int = 1) {
+        _viewModel = State(
+            initialValue: ProfileViewModel(service: profileService, profileId: profileId)
+        )
+    }
 
     var body: some View {
-        Group {
-            if let viewModel {
-                ProfileRootView(viewModel: viewModel)
-            } else {
-                Color.clear
-                    .task {
-                        guard viewModel == nil else { return }
-                        viewModel = ProfileViewModel(service: servicesAssembly.profileService, profileId: 1)
-                    }
-            }
-        }
+        ProfileRootView(viewModel: viewModel)
     }
 }

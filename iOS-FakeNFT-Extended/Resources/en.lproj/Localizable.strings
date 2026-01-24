@@ -5,3 +5,7 @@
 "Error.unknown" = "Произошла неизвестная ошибка";
 "Error.repeat" = "Повторить";
 "Error.title" = "Ошибка";
+"Profile.name.fallback" = "Без имени";
+"Profile.description.fallback" = "Описание профиля отсутствует";
+"Profile.menu.myNfts" = "Мои NFT (%d)";
+"Profile.menu.favourites" = "Избранные NFT (%d)";

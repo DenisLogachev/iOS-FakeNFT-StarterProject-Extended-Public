@@ -8,14 +8,19 @@
 import SwiftUI
 
 struct ProfileRootView: View {
-    @State private var viewModel: ProfileViewModel
+    @Bindable var viewModel: ProfileViewModel
 
     init(viewModel: ProfileViewModel) {
-        _viewModel = State(initialValue: viewModel)
+        self.viewModel = viewModel
     }
 
     var body: some View {
-        NavigationStack(path: $viewModel.path) {
+        NavigationStack(
+            path: Binding(
+                get: { viewModel.path },
+                set: { viewModel.setPath($0) }
+            )
+        ) {
             ProfileView(viewModel: viewModel)
                 .navigationDestination(for: ProfileRoute.self) { destination(for: $0) }
         }

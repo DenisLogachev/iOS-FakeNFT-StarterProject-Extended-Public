@@ -29,7 +29,7 @@ struct ProfileView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 if case .loaded = viewModel.state {
-                    Button { viewModel.path.append(.editProfile) } label: { Image(.icEdit) }
+                    Button { viewModel.openEdit() } label: { Image(.icEdit) }
                 }
             }
         }
@@ -57,11 +57,11 @@ struct ProfileView: View {
 
     private func header(profile: Profile) -> some View {
         HStack(alignment: .center, spacing: 16) {
-            avatar(urlString: profile.avatar)
+            avatar(url: profile.avatarURL)
                 .frame(width: 70, height: 70)
                 .clipShape(Circle())
 
-            Text(profile.name)
+            Text(profile.displayName)
                 .lineLimit(2)
                 .minimumScaleFactor(0.8)
                 .font(.system(size: 22, weight: .bold))
@@ -73,7 +73,7 @@ struct ProfileView: View {
     }
 
     private func description(profile: Profile) -> some View {
-        Text(profile.description ?? "Здесь пока ничего нет")
+        Text(profile.displayDescription)
             .font(.system(size: 13, weight: .regular))
             .foregroundStyle(.ypBlack)
             .multilineTextAlignment(.leading)
@@ -81,50 +81,61 @@ struct ProfileView: View {
             .padding(.top, 20)
     }
 
+    @ViewBuilder
     private func website(profile: Profile) -> some View {
-        Button {
-            if let url = URL(string: profile.website) {
-                viewModel.path.append(.website(url))
+        if let website = profile.displayWebsite,
+           let url = URL(string: website) {
+            Button {
+                viewModel.openWebsite(url)
+            } label: {
+                Text(website)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .foregroundStyle(.ypBlue)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
             }
-        } label: {
-            Text(profile.website)
-                .lineLimit(1)
-                .truncationMode(.middle)
-                .font(.system(size: 15, weight: .regular))
-                .foregroundStyle(.ypBlue)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .contentShape(Rectangle())
-            }
-        .buttonStyle(.plain)
-        .padding(.top, 8)
+            .buttonStyle(.plain)
+            .padding(.top, 8)
+        }
     }
 
 
     private func menu(profile: Profile) -> some View {
         List {
-            Button { viewModel.path.append(.myNfts) } label: {
-                ProfileMenuRowContent(title: "Мои NFT (\(profile.nfts.count))")
+            Button { viewModel.openMyNFTs() } label: {
+                ProfileMenuRowContent(
+                    title: String(
+                        format: NSLocalizedString("Profile.menu.myNfts", comment: ""),
+                        profile.nftCount
+                    )
+                )
             }
-            .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+            .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
             .listRowSeparator(.hidden)
 
-            Button { viewModel.path.append(.favourites) } label: {
-                ProfileMenuRowContent(title: "Избранные NFT (\(profile.likes.count))")
+            Button { viewModel.openFavourites() } label: {
+                ProfileMenuRowContent(
+                    title: String(
+                        format: NSLocalizedString("Profile.menu.favourites", comment: ""),
+                        profile.likesCount
+                    )
+                )
             }
-            .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+            .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
             .listRowSeparator(.hidden)
         }
         .listStyle(.plain)
         .scrollDisabled(true)
         .scrollContentBackground(.hidden)
-        .frame(height: 54 * 2)
+        .frame(height: 108)
         .frame(maxWidth: .infinity)
         .padding(.top, 24)
     }
 
-    private func avatar(urlString: String?) -> some View {
+    private func avatar(url: URL?) -> some View {
         Group {
-            if let urlString, let url = URL(string: urlString) {
+            if let url {
                 AsyncImage(url: url) { phase in
                     switch phase {
                     case .success(let image):
