@@ -49,7 +49,7 @@ struct CurrencyRowView: View {
             Spacer()
         }
         .padding(.vertical, 5)
-        .padding(.horizontal, 12)
+        .padding(.horizontal, LayoutConstants.paddingMedium)
         .background(.ypLightGray)
         .clipShape(RoundedRectangle(cornerRadius: LayoutConstants.cornerRadius))
         .overlay(

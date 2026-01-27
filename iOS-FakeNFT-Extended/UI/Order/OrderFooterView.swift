@@ -31,8 +31,8 @@ struct OrderFooterView: View {
             }
             .buttonStyle(.primary(height: LayoutConstants.buttonHeightSmall))
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 16)
+        .padding(.horizontal, LayoutConstants.paddingStandard)
+        .padding(.vertical, LayoutConstants.paddingStandard)
         .background(.ypLightGray)
         .clipShape(RoundedRectangle(cornerRadius: LayoutConstants.cornerRadius))
     }

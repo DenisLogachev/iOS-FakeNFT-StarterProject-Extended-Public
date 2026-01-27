@@ -22,18 +22,18 @@ struct CurrencySelectionFooterView: View {
                     .font(.footnoteRegular)
                     .foregroundStyle(.ypBlue)
             }
-            .padding(.bottom, 8)
+            .padding(.bottom, LayoutConstants.paddingSmall)
             
             Button(action: onPayTap) {
                 Text(String(localized: "CurrencySelection.payButton"))
             }
             .buttonStyle(.primary)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 16)
+        .padding(.horizontal, LayoutConstants.paddingStandard)
+        .padding(.vertical, LayoutConstants.paddingStandard)
         .background(.ypLightGray)
         .clipShape(RoundedRectangle(cornerRadius: LayoutConstants.cornerRadius))
-        .padding(.bottom, 16)
+        .padding(.bottom, LayoutConstants.paddingStandard)
     }
 }
 

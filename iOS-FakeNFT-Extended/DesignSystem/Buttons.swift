@@ -7,13 +7,6 @@
 
 import SwiftUI
 
-enum LayoutConstants {
-    static let buttonHeightSmall: CGFloat = 44
-    static let buttonHeightLarge: CGFloat = 60
-    static let cornerRadius: CGFloat = 12
-    static let nftImageSize: CGFloat = 108
-}
-
 struct PrimaryButtonStyle: ButtonStyle {
     let height: CGFloat
     let foregroundColor: Color

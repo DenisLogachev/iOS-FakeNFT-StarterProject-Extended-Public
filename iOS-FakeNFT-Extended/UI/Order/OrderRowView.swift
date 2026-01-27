@@ -54,8 +54,8 @@ struct OrderRowView: View {
                     .contentShape(Rectangle())
             }
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 16)
+        .padding(.vertical, LayoutConstants.paddingSmall)
+        .padding(.horizontal, LayoutConstants.paddingStandard)
     }
     
     private var priceText: String {

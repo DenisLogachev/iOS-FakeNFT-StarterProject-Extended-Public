@@ -40,8 +40,8 @@ struct CurrencySelectionView: View {
                         }
                     }
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 20)
+                .padding(.horizontal, LayoutConstants.paddingStandard)
+                .padding(.vertical, LayoutConstants.paddingLarge)
             }
             .navigationTitle(String(localized: "CurrencySelection.title"))
             .navigationBarTitleDisplayMode(.inline)

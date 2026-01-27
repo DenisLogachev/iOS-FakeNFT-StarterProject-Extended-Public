@@ -35,8 +35,8 @@ struct PaymentSuccessView: View {
                 Text(String(localized: "Payment.success.backToCart"))
             }
             .buttonStyle(.primary)
-            .padding(.horizontal, 16)
-            .padding(.bottom, 16)
+            .padding(.horizontal, LayoutConstants.paddingStandard)
+            .padding(.bottom, LayoutConstants.paddingStandard)
         }
     }
 }
