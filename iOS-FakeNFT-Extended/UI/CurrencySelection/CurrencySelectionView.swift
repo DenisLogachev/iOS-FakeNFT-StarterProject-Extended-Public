@@ -28,20 +28,27 @@ struct CurrencySelectionView: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                LazyVGrid(columns: Self.columns, spacing: 7) {
-                    ForEach(viewModel.currencies, id: \.id) { currency in
-                        CurrencyRowView(
-                            currency: currency,
-                            isSelected: viewModel.selectedCurrency?.id == currency.id
-                        )
-                        .onTapGesture {
-                            viewModel.selectCurrency(currency)
+            Group {
+                if viewModel.isLoading {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    ScrollView {
+                        LazyVGrid(columns: Self.columns, spacing: 7) {
+                            ForEach(viewModel.currencies, id: \.id) { currency in
+                                CurrencyRowView(
+                                    currency: currency,
+                                    isSelected: viewModel.selectedCurrency?.id == currency.id
+                                )
+                                .onTapGesture {
+                                    viewModel.selectCurrency(currency)
+                                }
+                            }
                         }
+                        .padding(.horizontal, LayoutConstants.paddingStandard)
+                        .padding(.vertical, LayoutConstants.paddingLarge)
                     }
                 }
-                .padding(.horizontal, LayoutConstants.paddingStandard)
-                .padding(.vertical, LayoutConstants.paddingLarge)
             }
             .navigationTitle(String(localized: "CurrencySelection.title"))
             .navigationBarTitleDisplayMode(.inline)
@@ -77,7 +84,13 @@ struct CurrencySelectionView: View {
                 }
                 Button(String(localized: "Payment.error.retry")) {
                     viewModel.retryPayment()
+                    Task {
+                        await viewModel.loadCurrencies()
+                    }
                 }
+            }
+            .task {
+                await viewModel.loadCurrencies()
             }
         }
     }
@@ -85,6 +98,10 @@ struct CurrencySelectionView: View {
 
 // MARK: - Preview
 #Preview {
-    let viewModel = CurrencySelectionViewModel()
+    let servicesAssembly = ServicesAssembly(
+        networkClient: DefaultNetworkClient(),
+        nftStorage: NftStorageImpl()
+    )
+    let viewModel = CurrencySelectionViewModel(currencyService: servicesAssembly.currencyService)
     return CurrencySelectionView(viewModel: viewModel, onPayTap: {})
 }

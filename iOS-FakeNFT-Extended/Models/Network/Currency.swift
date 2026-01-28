@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Currency: Sendable {
+struct Currency: Sendable, Codable {
     let id: String
     let title: String
     let name: String
