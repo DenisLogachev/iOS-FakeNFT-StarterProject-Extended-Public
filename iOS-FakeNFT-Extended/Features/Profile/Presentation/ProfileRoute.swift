@@ -10,6 +10,6 @@ import Foundation
 enum ProfileRoute: Hashable {
     case myNfts
     case favourites
-    case editProfile
+    case editProfile(profileId: Int)
     case website(URL)
 }

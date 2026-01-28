@@ -50,7 +50,7 @@ final class ProfileViewModel {
     }
 
     func openEdit() {
-        path.append(.editProfile)
+        path.append(.editProfile(profileId: profileId))
     }
 
     func openMyNFTs() {

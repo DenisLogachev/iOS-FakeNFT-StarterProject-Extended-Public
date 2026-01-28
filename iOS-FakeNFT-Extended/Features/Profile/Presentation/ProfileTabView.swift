@@ -9,14 +9,19 @@ import SwiftUI
 
 struct ProfileTabView: View {
     @State private var viewModel: ProfileViewModel
+    private let profileService: ProfileService
 
     init(profileService: ProfileService, profileId: Int = 1) {
+        self.profileService = profileService
         _viewModel = State(
             initialValue: ProfileViewModel(service: profileService, profileId: profileId)
         )
     }
 
     var body: some View {
-        ProfileRootView(viewModel: viewModel)
+        ProfileRootView(
+            viewModel: viewModel,
+            profileService: profileService
+        )
     }
 }
