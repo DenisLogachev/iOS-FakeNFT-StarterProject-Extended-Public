@@ -134,21 +134,8 @@ struct ProfileView: View {
     }
 
     private func avatar(url: URL?) -> some View {
-        Group {
-            if let url {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image.resizable().scaledToFill()
-                    case .failure, .empty:
-                        placeholderAvatar
-                    @unknown default:
-                        placeholderAvatar
-                    }
-                }
-            } else {
-                placeholderAvatar
-            }
+        RemoteImageView(url: url) {
+            placeholderAvatar
         }
     }
 

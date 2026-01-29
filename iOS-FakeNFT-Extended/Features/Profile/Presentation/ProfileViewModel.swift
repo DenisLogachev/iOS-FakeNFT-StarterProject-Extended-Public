@@ -68,4 +68,8 @@ final class ProfileViewModel {
     private func setLoading(_ value: Bool) {
         isLoading = value
     }
+    
+    func applyUpdatedProfile(_ profile: Profile) {
+        state = .loaded(profile)
+    }
 }

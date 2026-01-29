@@ -101,20 +101,25 @@ struct ProfileEditView: View {
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled(true)
 
-            Button(NSLocalizedString("Common.cancel", comment: ""), role: .cancel) { }
-
             Button(NSLocalizedString("Common.save", comment: "")) {
                 viewModel.setAvatarURL(from: photoURLText)
             }
+
+            Button(NSLocalizedString("Common.cancel", comment: ""), role: .cancel) { }
         }
         .overlay {
             if viewModel.isSaving {
                 ZStack {
-                    Color.black.opacity(0.01)
+                    Color.black.opacity(0.05)
                         .ignoresSafeArea()
                         .allowsHitTesting(true)
 
-                    ProgressView()
+                    ZStack {
+                        ProgressView()
+                    }
+                    .frame(width: 82, height: 82)
+                    .background(Color(.ypLightGray))
+                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                 }
             }
         }
@@ -139,19 +144,8 @@ struct ProfileEditView: View {
     }
 
     private var avatarView: some View {
-        Group {
-            if let url = viewModel.draft.avatarRemoteURL {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image.resizable().scaledToFill()
-                    default:
-                        placeholderAvatar
-                    }
-                }
-            } else {
-                placeholderAvatar
-            }
+        RemoteImageView(url: viewModel.draft.avatarRemoteURL) {
+            placeholderAvatar
         }
     }
 
@@ -182,8 +176,8 @@ struct ProfileEditView: View {
     private var saveButton: some View {
         Button {
             Task {
-                await viewModel.save()
-                dismiss()
+                let didSave = await viewModel.save()
+                if didSave { dismiss() }
             }
         } label: {
             Text(NSLocalizedString("Common.save", comment: ""))
@@ -195,7 +189,7 @@ struct ProfileEditView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
         .buttonStyle(.plain)
-        .disabled(viewModel.isSaving || !viewModel.hasChanges)
-        .opacity((viewModel.isSaving || !viewModel.hasChanges) ? 0.6 : 1)
+        .disabled(!viewModel.canSave)
+        .opacity(viewModel.canSave ? 1 : 0.6)
     }
 }

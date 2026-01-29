@@ -38,8 +38,12 @@ struct ProfileRootView: View {
             if case .loaded(let profile) = viewModel.state {
                 ProfileEditView(
                     viewModel: ProfileEditViewModel(
+                        profileId: profileId,
                         profile: profile,
-                        service: profileService
+                        service: profileService,
+                        onSaved: { updated in
+                            viewModel.applyUpdatedProfile(updated)
+                        }
                     )
                 )
             } else {
