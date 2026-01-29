@@ -27,7 +27,7 @@ struct CatalogMainView: View {
             }
             .padding(.bottom, 20)
             
-            ScrollView(.vertical, showsIndicators: false) {
+            ScrollView(.vertical) {
                 LazyVStack(spacing: 21) {
                     ForEach(catalogVM.collections) { collection in
                         Button {
@@ -38,6 +38,7 @@ struct CatalogMainView: View {
                     }
                 }
             }
+            .scrollIndicators(.hidden)
             .overlay {
                 BlobsView()
                     .opacity(catalogVM.isLoading ? 1 : 0)
