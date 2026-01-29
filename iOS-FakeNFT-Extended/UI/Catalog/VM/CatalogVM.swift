@@ -5,15 +5,13 @@
 //  Created by ANTON ZVERKOV on 28.01.2026.
 //
 
-import Foundation
-
 import SwiftUI
 
 @MainActor
 @Observable
 final class CatalogVM {
     var collections: [NFTCollection] = []
-    var collectionCovers: [String: UIImage] = [:]
+    var collectionCovers: [String: Image] = [:]
     
     var isRefreshingNFTs: Bool = false
     var isLoading: Bool = false
@@ -32,7 +30,7 @@ final class CatalogVM {
         await withThrowingTaskGroup(of: Void.self) { group in
             for collection in collections {
                 group.addTask {
-                    await MainActor.run { self.collectionCovers[collection.id] = UIImage(resource: .peachGroup) }
+                    await MainActor.run { self.collectionCovers[collection.id] = Image(.peachGroup) }
                 }
             }
         }

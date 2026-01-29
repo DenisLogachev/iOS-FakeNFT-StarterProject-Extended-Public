@@ -11,56 +11,56 @@ struct BlobsView: View {
     
     var body: some View {
         TimelineView(.animation) { timeline in
-                PhaseAnimator([0, 1]) { phase in
-                    ZStack {
-                        Rectangle()
-                            .fill(
-                                LinearGradient(
-                                    colors: [.blue, .cyan, .purple, .red],
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                )
+            PhaseAnimator([0, 1]) { phase in
+                ZStack {
+                    Rectangle()
+                        .fill(
+                            LinearGradient(
+                                colors: [.blue, .cyan, .purple, .red],
+                                startPoint: .top,
+                                endPoint: .bottom
                             )
-                            .rotationEffect(.degrees(phase == 1 ? 360 : 0))
-                        Text("Loading...")
-                            .font(.largeTitle)
-                            .foregroundStyle(Color.white)
-                            .opacity(phase)
-                    }
-                } animation: { _ in
-                        .easeInOut(duration: 1.5)
+                        )
+                        .rotationEffect(.degrees(phase == 1 ? 360 : 0))
+                    Text("Loading...")
+                        .font(.largeTitle)
+                        .foregroundStyle(Color.white)
+                        .opacity(phase)
                 }
-                .mask {
-                    Canvas { context, size in
-                        
-                        let time = timeline.date.timeIntervalSinceReferenceDate
-                        
-                        context.addFilter(.alphaThreshold(min: 0.5))
-                        context.addFilter(.blur(radius: 30))
-                        
-                        context.drawLayer { layer in
-                            for i in 0..<3 {
-                                let position = blobPosition(
-                                    index: i,
-                                    time: time,
-                                    size: size
-                                )
-                                
-                                let radius: CGFloat = 70
-                                
-                                layer.fill(
-                                    Path(ellipseIn: CGRect(
-                                        x: position.x - radius,
-                                        y: position.y - radius,
-                                        width: radius * 2,
-                                        height: radius * 2
-                                    )),
-                                    with: .color(.white)
-                                )
-                            }
+            } animation: { _ in
+                    .easeInOut(duration: 1.5)
+            }
+            .mask {
+                Canvas { context, size in
+                    
+                    let time = timeline.date.timeIntervalSinceReferenceDate
+                    
+                    context.addFilter(.alphaThreshold(min: 0.5))
+                    context.addFilter(.blur(radius: 30))
+                    
+                    context.drawLayer { layer in
+                        for i in 0..<3 {
+                            let position = blobPosition(
+                                index: i,
+                                time: time,
+                                size: size
+                            )
+                            
+                            let radius: CGFloat = 70
+                            
+                            layer.fill(
+                                Path(ellipseIn: CGRect(
+                                    x: position.x - radius,
+                                    y: position.y - radius,
+                                    width: radius * 2,
+                                    height: radius * 2
+                                )),
+                                with: .color(.white)
+                            )
                         }
                     }
                 }
+            }
         }
         .blur(radius: 2)
         .shadow(radius: 5)

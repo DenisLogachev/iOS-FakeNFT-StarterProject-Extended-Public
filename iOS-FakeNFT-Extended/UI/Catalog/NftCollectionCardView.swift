@@ -12,12 +12,12 @@ struct NftCollectionCardView: View {
     @Environment(NavigationRouter.self) var navRouter
     @Environment(CatalogVM.self) var catalogVM
     let nftCollection: NFTCollection
-    let collectionCover: UIImage?
+    let collectionCover: Image?
     
     var body: some View {
         VStack(alignment: .leading) {
             if let collectionCover {
-                fetchedImage(Image(uiImage: collectionCover))
+                fetchedImage(collectionCover)
             } else {
                 fetchImage(for: nftCollection)
             }
@@ -29,7 +29,7 @@ struct NftCollectionCardView: View {
     }
     
     @ViewBuilder
-    func loadingImage() -> some View {
+    private func loadingImage() -> some View {
         ZStack {
             Color.gray.opacity(0.1)
                 .frame(height: 140)
@@ -43,7 +43,7 @@ struct NftCollectionCardView: View {
     }
     
     @ViewBuilder
-    func fetchedImage(_ image: Image) -> some View {
+    private func fetchedImage(_ image: Image) -> some View {
         image
             .resizable()
             .scaledToFill()
@@ -52,7 +52,7 @@ struct NftCollectionCardView: View {
     }
     
     @ViewBuilder
-    func fetchImage(for collection: NFTCollection) -> some View {
+    private func fetchImage(for collection: NFTCollection) -> some View {
         if let url = URL(string: collection.cover) {
             AsyncImage(url: url) { phase in
                 switch phase {
@@ -72,7 +72,7 @@ struct NftCollectionCardView: View {
     }
     
     @ViewBuilder
-    func placeholderImage() -> some View {
+    private func placeholderImage() -> some View {
         ZStack {
             Image(.peachGroup)
                 .resizable()
@@ -87,7 +87,7 @@ struct NftCollectionCardView: View {
 }
 
 #Preview {
-    NftCollectionCardView(nftCollection: NFTCollection.mockCollections.first!, collectionCover: UIImage(resource: .peachGroup))
+    NftCollectionCardView(nftCollection: NFTCollection.mockCollections.first!, collectionCover: Image(.peachGroup))
         .environment(NavigationRouter())
         .environment(CatalogVM())
 }

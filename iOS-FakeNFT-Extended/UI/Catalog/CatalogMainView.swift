@@ -67,7 +67,7 @@ struct CatalogMainView: View {
     }
     
     @ViewBuilder
-    func destinationView(_ destination: NavigationRouter.NavDestination) -> some View {
+    private func destinationView(_ destination: NavigationRouter.NavDestination) -> some View {
         switch destination {
         case .collection(let collection):
             
