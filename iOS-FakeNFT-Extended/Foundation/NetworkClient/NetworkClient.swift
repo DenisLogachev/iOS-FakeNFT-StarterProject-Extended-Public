@@ -8,6 +8,10 @@ enum NetworkClientError: Error {
     case incorrectRequest(String)
 }
 
+protocol URLEncodable {
+    func urlEncodedData() -> Data?
+}
+
 protocol NetworkClient {
     func send(request: NetworkRequest) async throws -> Data
     func send<T: Decodable>(request: NetworkRequest) async throws -> T
@@ -17,7 +21,7 @@ actor DefaultNetworkClient: NetworkClient {
     private let session: URLSession
     private let decoder: JSONDecoder
     private let encoder: JSONEncoder
-
+    
     init(
         session: URLSession = URLSession.shared,
         decoder: JSONDecoder = JSONDecoder(),
@@ -27,7 +31,7 @@ actor DefaultNetworkClient: NetworkClient {
         self.decoder = decoder
         self.encoder = encoder
     }
-
+    
     func send(request: NetworkRequest) async throws -> Data {
         let urlRequest = try create(request: request)
         let (data, response) = try await session.data(for: urlRequest)
@@ -39,32 +43,43 @@ actor DefaultNetworkClient: NetworkClient {
         }
         return data
     }
-
+    
     func send<T: Decodable>(request: NetworkRequest) async throws -> T {
         let data = try await send(request: request)
         return try await parse(data: data)
     }
-
+    
     // MARK: - Private
-
+    
     private func create(request: NetworkRequest) throws -> URLRequest {
         guard let endpoint = request.endpoint else {
             throw NetworkClientError.incorrectRequest("Empty endpoint")
         }
-
+        
         var urlRequest = URLRequest(url: endpoint)
         urlRequest.httpMethod = request.httpMethod.rawValue
-
-        if let dto = request.dto,
-           let dtoEncoded = try? encoder.encode(dto) {
-            urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            urlRequest.httpBody = dtoEncoded
+        
+        if let dto = request.dto {
+            let contentType = request.contentType ?? "application/json"
+            
+            if contentType == "application/x-www-form-urlencoded" {
+                if let urlEncodedDTO = dto as? URLEncodable {
+                    urlRequest.setValue(contentType, forHTTPHeaderField: "Content-Type")
+                    urlRequest.httpBody = urlEncodedDTO.urlEncodedData()
+                } else {
+                    throw NetworkClientError.incorrectRequest("DTO must conform to URLEncodable for urlencoded content type")
+                }
+            } else {
+                let dtoEncoded = try encoder.encode(dto)
+                urlRequest.setValue(contentType, forHTTPHeaderField: "Content-Type")
+                urlRequest.httpBody = dtoEncoded
+            }
         }
         urlRequest.addValue(RequestConstants.token, forHTTPHeaderField: "X-Practicum-Mobile-Token")
-
+        
         return urlRequest
     }
-
+    
     private func parse<T: Decodable>(data: Data) async throws -> T {
         do {
             return try decoder.decode(T.self, from: data)

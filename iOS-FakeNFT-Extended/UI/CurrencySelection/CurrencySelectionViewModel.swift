@@ -14,34 +14,25 @@ final class CurrencySelectionViewModel {
     var currencies: [Currency] = []
     var selectedCurrency: Currency?
     var paymentError: String?
-
-    init() {
-        loadMockData()
+    var isLoading: Bool = false
+    
+    private let currencyService: CurrencyService
+    
+    init(currencyService: CurrencyService) {
+        self.currencyService = currencyService
     }
-
+    
     // MARK: - Private Methods
-    private func loadMockData() {
-        let mockData: [(id: String, title: String, name: String, imagePath: String)] = [
-            ("1", "Bitcoin", "BTC", "bitcoin-btc-logo.png"),
-            ("2", "Tether", "USDT", "tether-usdt-logo.png"),
-            ("3", "Solana", "SOL", "solana-sol-logo.png"),
-            ("4", "Cardano", "ADA", "cardano-ada-logo.png"),
-            ("5", "Dogecoin", "DOGE", "dogecoin-doge-logo.png"),
-            ("6", "ApeCoin", "APE", "apecoin-ape-logo.png"),
-            ("7", "Ethereum", "ETH", "ethereum-eth-logo.png"),
-            ("8", "Shiba Inu", "SHIB", "shiba-inu-shib-logo.png")
-        ]
+    func loadCurrencies() async {
+        isLoading = true
+        defer { isLoading = false }
         
-        currencies = mockData.map { data in
-            Currency(
-                id: data.id,
-                title: data.title,
-                name: data.name,
-                image: URL(string: "https://cryptologos.cc/logos/\(data.imagePath)")!
-            )
+        do {
+            currencies = try await currencyService.loadCurrencies()
+            selectedCurrency = currencies.first
+        } catch {
+            paymentError = String(localized: "Error.network")
         }
-        
-        selectedCurrency = currencies.first
     }
 
     // MARK: - Public Methods

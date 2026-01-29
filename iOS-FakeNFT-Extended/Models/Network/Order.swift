@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Order: Sendable {
+struct Order: Sendable, Codable {
     let id: String
     let nfts: [String]
     let currencyId: String?
