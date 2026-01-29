@@ -16,16 +16,21 @@ struct BlobsView: View {
                     Rectangle()
                         .fill(
                             LinearGradient(
-                                colors: [.blue, .cyan, .purple, .red],
+                                colors: [
+                                    .blue.opacity(0.5),
+                                    .cyan.opacity(0.5),
+                                    .purple.opacity(0.5),
+                                    .red.opacity(0.5)
+                                ],
                                 startPoint: .top,
                                 endPoint: .bottom
                             )
                         )
                         .rotationEffect(.degrees(phase == 1 ? 360 : 0))
                     Text("Loading...")
-                        .font(.largeTitle)
+                        .font(.title)
                         .foregroundStyle(Color.white)
-                        .opacity(phase)
+                        .opacity(phase == 0 ? 1 : 0)
                 }
             } animation: { _ in
                     .easeInOut(duration: 1.5)
@@ -46,7 +51,7 @@ struct BlobsView: View {
                                 size: size
                             )
                             
-                            let radius: CGFloat = 70
+                            let radius: CGFloat = 45
                             
                             layer.fill(
                                 Path(ellipseIn: CGRect(
@@ -70,7 +75,7 @@ struct BlobsView: View {
         let center = CGPoint(x: size.width / 2, y: size.height / 2)
         
         let angle = time * 0.8 + Double(index) * .pi * 2 / 3
-        let radius: CGFloat = 60
+        let radius: CGFloat = 50
         
         return CGPoint(
             x: center.x + cos(angle) * radius,
