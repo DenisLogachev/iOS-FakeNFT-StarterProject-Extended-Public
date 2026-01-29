@@ -11,6 +11,7 @@ struct NftView: View {
     
     @Environment(CatalogVM.self) private var catalogVM
     @State private var isInCart: Bool = false
+    @State private var isLiked: Bool = false
     
     let nft: NFTItem
     
@@ -56,14 +57,14 @@ struct NftView: View {
                 
                 Button {
                     
-                    // add to cart
+                    // TODO: add "add to cart" feature
                     
                     isInCart.toggle()
                 } label: {
                     
-                    // check cart for NFT ID
+                    // TODO: add "check if NFT was added to cart" feature
                     
-                    (isInCart ? Image(.icBasketIn): Image(.icBasketOut))
+                    Image(isInCart ? .icBasketIn : .icBasketOut)
                         .resizable()
                         .scaledToFit()
                         .padding(12)
@@ -76,10 +77,25 @@ struct NftView: View {
     
     @ViewBuilder
     private func nftImage(_ image: Image) -> some View {
-        image
-            .resizable()
-            .scaledToFit()
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        ZStack(alignment: .topTrailing) {
+            image
+                .resizable()
+                .scaledToFit()
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            Button {
+                
+                //TODO: add "likes" feature
+                
+                isLiked.toggle()
+            } label: {
+                Image(.icFavoritesUnselected)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+                    .padding(12)
+                    .foregroundStyle(isLiked ? .ypRed : .ypWhite)
+            }
+        }
     }
     
     @ViewBuilder
@@ -108,5 +124,5 @@ struct NftView: View {
 
 #Preview {
     NftView(nft: NFTItem.mockNFTs.first!)
-        .environment(CatalogVM())
+        .environment(CatalogVM(apiClient: MockAPIClient()))
 }
