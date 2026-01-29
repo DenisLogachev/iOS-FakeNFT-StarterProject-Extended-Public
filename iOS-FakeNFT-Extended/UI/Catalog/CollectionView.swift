@@ -9,11 +9,11 @@ import SwiftUI
 
 struct CollectionView: View {
     
-    @Environment(NavigationRouter.self) var navRouter
-    @Environment(CatalogVM.self) var catalogVM
+    @Environment(NavigationRouter.self) private var navRouter
+    @Environment(CatalogVM.self) private var catalogVM
     
-    @State var scrollOffset: CGFloat = 17393649 //critical number, do not change
-    @State var fetchedNFTs: [String: NFTItem?] = [:]
+    @State private var scrollOffset: CGFloat = .infinity
+    @State private var fetchedNFTs: [String: NFTItem?] = [:]
     
     let nftCollection: NFTCollection
     let coverImage: Image?
@@ -46,8 +46,8 @@ struct CollectionView: View {
     }
     
     @ViewBuilder
-    func refreshThingy() -> some View {
-        if scrollOffset != 17393649 { //yeah, thats why that number is important!
+    private func refreshThingy() -> some View {
+        if scrollOffset != .infinity {
             let startY = expandedHeight + infoHeight
             let pull = max(0, scrollOffset - startY)
             let maxPull: CGFloat = 160
@@ -97,7 +97,7 @@ struct CollectionView: View {
     }
     
     @ViewBuilder
-    func glassThingy() -> some View {
+    private func glassThingy() -> some View {
         VStack {
             Color.clear.frame(height: infoHeight / 2 + 108)
                 .background(.ultraThinMaterial)
@@ -106,7 +106,7 @@ struct CollectionView: View {
     }
     
     @ViewBuilder
-    func collectionCover(_ scrollOffset: CGFloat) -> some View {
+    private func collectionCover(_ scrollOffset: CGFloat) -> some View {
         let height = max(collapsedHeight, min(scrollOffset, expandedHeight)) - 16
         let blurStart: CGFloat = expandedHeight + infoHeight
         let progress = max(0, min(1, (blurStart - scrollOffset) / (blurStart - 100)))
@@ -127,7 +127,7 @@ struct CollectionView: View {
     }
     
     @ViewBuilder
-    func coverPlaceholder(height: CGFloat, progress: CGFloat) -> some View {
+    private func coverPlaceholder(height: CGFloat, progress: CGFloat) -> some View {
         VStack {
             ZStack {
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -144,7 +144,7 @@ struct CollectionView: View {
     }
     
     @ViewBuilder
-    func collectionInfo(_ scrollOffset: CGFloat) -> some View {
+    private func collectionInfo(_ scrollOffset: CGFloat) -> some View {
         
         let shouldMoveToTop: Bool = scrollOffset < expandedHeight + infoHeight
         
@@ -168,12 +168,11 @@ struct CollectionView: View {
             Spacer()
         }
         .padding(.horizontal, 16)
-        .padding(.top, shouldMoveToTop ? 60 : expandedHeight)
-        .padding(.top, 16)
+        .padding(.top, shouldMoveToTop ? 76 : expandedHeight + 16)
     }
     
     @ViewBuilder
-    func collectionGrid() -> some View {
+    private func collectionGrid() -> some View {
         ScrollView {
             VStack {
                 Color.clear.frame(height: catalogVM.isRefreshingNFTs ? 100 : 0)
@@ -181,8 +180,8 @@ struct CollectionView: View {
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 9), count: 3), spacing: 28) {
                     ForEach(nftCollection.uniqueNfts, id: \.self) { nftID in
                         if let nft = fetchedNFTs[nftID], let nft {
-                                NftView(nft: nft)
-                                    .frame(height: 192, alignment: .topLeading)
+                            NftView(nft: nft)
+                                .frame(height: 192, alignment: .topLeading)
                         } else {
                             VStack {
                                 ZStack {

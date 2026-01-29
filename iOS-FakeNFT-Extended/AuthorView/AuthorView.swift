@@ -15,7 +15,7 @@ struct AuthorView: View {
             if let url = URL(string: "https://practicum.yandex.ru") {
                 WebView(isLoading: $isLoading, url: url)
             }
-            BlobsView().opacity(isLoading ? 1 : 0)
+            BlobsView().hiddenWhen(isLoading)
         }
         .ignoresSafeArea()
         .animation(.easeInOut(duration: 1), value: isLoading)

@@ -29,7 +29,7 @@ struct WebView: UIViewRepresentable {
     }
     
     final class Coordinator: NSObject, WKNavigationDelegate {
-        let parent: WebView
+        private let parent: WebView
         
         init(_ parent: WebView) {
             self.parent = parent

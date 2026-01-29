@@ -9,8 +9,8 @@ import SwiftUI
 
 struct NftView: View {
     
-    @Environment(CatalogVM.self) var catalogVM
-    @State var isInCart: Bool = false
+    @Environment(CatalogVM.self) private var catalogVM
+    @State private var isInCart: Bool = false
     
     let nft: NFTItem
     
@@ -51,7 +51,7 @@ struct NftView: View {
                         .padding(.bottom, 4)
                     Text("\(nft.priceString) ETH")
                         .font(.system(size: 10, weight: .medium))
-                        .foregroundColor(.primary) //change to custom
+                        .foregroundStyle(.primary)
                 }
                 
                 Button {
@@ -75,7 +75,7 @@ struct NftView: View {
     }
     
     @ViewBuilder
-    func nftImage(_ image: Image) -> some View {
+    private func nftImage(_ image: Image) -> some View {
         image
             .resizable()
             .scaledToFit()
@@ -83,7 +83,7 @@ struct NftView: View {
     }
     
     @ViewBuilder
-    func nftPlaceholderImage() -> some View {
+    private func nftPlaceholderImage() -> some View {
         ZStack {
             Image(.daisy)
                 .resizable()
@@ -96,7 +96,7 @@ struct NftView: View {
     }
     
     @ViewBuilder
-    func nftLoadingImage() -> some View {
+    private func nftLoadingImage() -> some View {
         ZStack {
             Color.gray.opacity(0.1)
             ProgressView()
