@@ -60,6 +60,12 @@ final class CatalogVM {
         await loadCollectionsCoverImages(for: collections)
     }
     
+    func tryAgain() async {
+        errorMessage = ""
+        showError = false
+        await loadData()
+    }
+    
     func refreshData() async {
         await loadData()
     }

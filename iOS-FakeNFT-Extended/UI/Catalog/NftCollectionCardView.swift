@@ -9,8 +9,8 @@ import SwiftUI
 
 struct NftCollectionCardView: View {
     
-    @Environment(NavigationRouter.self) var navRouter
-    @Environment(CatalogVM.self) var catalogVM
+    @Environment(NavigationRouter.self) private var navRouter
+    @Environment(CatalogVM.self) private var catalogVM
     let nftCollection: NFTCollection
     let collectionCover: Image?
     

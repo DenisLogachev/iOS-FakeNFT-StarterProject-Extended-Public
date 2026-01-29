@@ -71,12 +71,12 @@ struct CatalogMainView: View {
     private func destinationView(_ destination: NavigationRouter.NavDestination) -> some View {
         switch destination {
         case .collection(let collection):
+            CollectionView(nftCollection: collection, coverImage: catalogVM.collectionCovers[collection.id])
+        case .author(let authorURL):
+            AuthorView()
             
-            //TODO: add collectionView
+            //TODO: add other destinations
             
-            EmptyView()
-        default:
-            EmptyView()
         }
     }
 }
