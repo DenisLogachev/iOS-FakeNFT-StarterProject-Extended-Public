@@ -15,6 +15,8 @@ struct ProfileEditView: View {
     @State private var isPhotoURLAlertPresented = false
     @State private var photoURLText = ""
 
+    @State private var isExitAlertPresented = false
+
     init(viewModel: ProfileEditViewModel) {
         _viewModel = State(initialValue: viewModel)
     }
@@ -73,9 +75,16 @@ struct ProfileEditView: View {
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                Button { dismiss() } label: { Image(.icBackward) }
+                Button {
+                    handleBackTap()
+                } label: {
+                    Image(.icBackward)
+                }
+                .buttonStyle(.plain)
+                .disabled(viewModel.isSaving)
             }
         }
+
         .confirmationDialog(
             NSLocalizedString("Profile.edit.photo.title", comment: ""),
             isPresented: $isPhotoDialogPresented,
@@ -92,6 +101,7 @@ struct ProfileEditView: View {
 
             Button(NSLocalizedString("Common.cancel", comment: ""), role: .cancel) { }
         }
+        
         .alert(
             NSLocalizedString("Profile.edit.photo.url.title", comment: ""),
             isPresented: $isPhotoURLAlertPresented
@@ -107,6 +117,19 @@ struct ProfileEditView: View {
 
             Button(NSLocalizedString("Common.cancel", comment: ""), role: .cancel) { }
         }
+
+        .alert(
+            NSLocalizedString("Profile.edit.exit.title", comment: ""),
+            isPresented: $isExitAlertPresented
+        ) {
+            Button(NSLocalizedString("Profile.edit.exit.stay", comment: ""), role: .cancel) {
+            }
+
+            Button(NSLocalizedString("Profile.edit.exit.leave", comment: "")) {
+                dismiss()
+            }
+        }
+
         .overlay {
             if viewModel.isSaving {
                 ZStack {
@@ -114,14 +137,22 @@ struct ProfileEditView: View {
                         .ignoresSafeArea()
                         .allowsHitTesting(true)
 
-                    ZStack {
-                        ProgressView()
-                    }
-                    .frame(width: 82, height: 82)
-                    .background(Color(.ypLightGray))
-                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    ProgressView()
+                        .frame(width: 82, height: 82)
+                        .background(Color(.ypLightGray))
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                 }
             }
+        }
+    }
+
+    private func handleBackTap() {
+        guard !viewModel.isSaving else { return }
+
+        if viewModel.hasChanges {
+            isExitAlertPresented = true
+        } else {
+            dismiss()
         }
     }
 

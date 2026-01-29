@@ -25,6 +25,9 @@
 "Profile.edit.name.title" = "Имя";
 "Profile.edit.description.title" = "Описание";
 "Profile.edit.website.title" = "Сайт";
+"Profile.edit.exit.title" = "Уверены,\nчто хотите выйти?";
+"Profile.edit.exit.stay" = "Остаться";
+"Profile.edit.exit.leave" = "Выйти";
 
 "Profile.edit.photo.title" = "Фото профиля";
 "Profile.edit.photo.change" = "Изменить фото";
