@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct TabBarView: View {
-    @Environment(NavigationRouter.self) var navigationRouter
-    @Environment(CatalogVM.self) var catalogVM
+    @Environment(NavigationRouter.self) private var navigationRouter
+    @Environment(CatalogVM.self) private var catalogVM
     
     var body: some View {
         @Bindable var navigationRouter = navigationRouter

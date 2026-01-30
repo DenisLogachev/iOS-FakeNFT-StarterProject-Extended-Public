@@ -15,14 +15,10 @@ enum APIEndpoint {
     
     var path: String {
         switch self {
-        case .collections:
-            return "/api/v1/collections"
-        case .collection(let id):
-            return "/api/v1/collections/\(id)"
-        case .nfts:
-            return "/api/v1/nft"
-        case .nft(let id):
-            return "/api/v1/nft/\(id)"
+        case .collections: "/api/v1/collections"
+        case .collection(let id): "/api/v1/collections/\(id)"
+        case .nfts: "/api/v1/nft"
+        case .nft(let id): "/api/v1/nft/\(id)"
         }
     }
 }

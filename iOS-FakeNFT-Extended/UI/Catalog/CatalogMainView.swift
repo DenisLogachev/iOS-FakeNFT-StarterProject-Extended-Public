@@ -12,7 +12,7 @@ struct CatalogMainView: View {
     @Environment(NavigationRouter.self) var navRouter
     @Environment(CatalogVM.self) var catalogVM
     
-    @AppStorage("sortOption") private var sortOption: SortOption = .byName
+    @AppStorage(SortOption.storedKey) private var sortOption: SortOption = .byName
     
     @State private var isShowingSortMenu: Bool = false
     

@@ -8,6 +8,8 @@
 import Foundation
 
 enum SortOption: String {
-    case byName = "byName"
-    case byNFTCount = "byNFTCount"
+    case byName
+    case byNFTCount
+    
+    static let storedKey = "SortOption"
 }
