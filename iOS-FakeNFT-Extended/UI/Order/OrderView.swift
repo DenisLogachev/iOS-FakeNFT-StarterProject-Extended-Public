@@ -13,11 +13,23 @@ struct OrderView: View {
     @State private var itemToDelete: OrderItem?
     @State private var showCurrencySelection = false
     @State private var showSortingMenu = false
+    @State private var showPaymentSuccess = false
+    
+    private var loadErrorBinding: Binding<Bool> {
+        Binding(
+            get: { viewModel.loadError != nil },
+            set: { if !$0 { viewModel.dismissLoadError() } }
+        )
+    }
     
     var body: some View {
         NavigationStack {
             contentView
-                .toolbar { sortingToolbarItem }
+                .toolbar {
+                    if !viewModel.isEmpty {
+                        sortingToolbarItem
+                    }
+                }
                 .toolbar(itemToDelete == nil ? .visible : .hidden, for: .navigationBar)
                 .confirmationDialog(
                     String(localized: "Order.sorting.title"),
@@ -27,8 +39,42 @@ struct OrderView: View {
                 )
                 .overlay { deleteConfirmationOverlay }
                 .sheet(isPresented: $showCurrencySelection) {
-                    currencySelectionAssembly.build(onPayTap: {})
+                    currencySelectionAssembly.build(onPayTap: { currencyId in
+                        Task { await handlePayment(currencyId: currencyId) }
+                    })
                 }
+                .fullScreenCover(isPresented: $showPaymentSuccess) {
+                    PaymentSuccessView(onBackToCart: {
+                        viewModel.clearCart()
+                        showPaymentSuccess = false
+                    })
+                }
+                .task {
+                    await viewModel.loadOrder()
+                }
+                .alert(String(localized: "Error.network"), isPresented: loadErrorBinding) {
+                    Button(String(localized: "Error.repeat")) {
+                        Task { await viewModel.loadOrder() }
+                    }
+                    Button(String(localized: "Payment.error.cancel"), role: .cancel) {
+                        viewModel.dismissLoadError()
+                    }
+                } message: {
+                    Text(viewModel.loadError ?? "")
+                }
+        }
+    }
+}
+
+// MARK: - Private Methods
+private extension OrderView {
+    func handlePayment(currencyId: String) async {
+        do {
+            try await viewModel.performPayment(currencyId: currencyId)
+            showPaymentSuccess = true
+            DispatchQueue.main.async { showCurrencySelection = false }
+        } catch {
+            viewModel.loadError = (error as NSError).localizedDescription
         }
     }
 }
@@ -83,9 +129,15 @@ private extension OrderView {
     
     @ViewBuilder
     func sortingActions() -> some View {
-        Button(String(localized: "Order.sorting.byPrice")) {}
-        Button(String(localized: "Order.sorting.byRating")) {}
-        Button(String(localized: "Order.sorting.byName")) {}
+        Button(String(localized: "Order.sorting.byPrice")) {
+            viewModel.applySort(by: .byPrice)
+        }
+        Button(String(localized: "Order.sorting.byRating")) {
+            viewModel.applySort(by: .byRating)
+        }
+        Button(String(localized: "Order.sorting.byName")) {
+            viewModel.applySort(by: .byName)
+        }
         Button(String(localized: "Order.sorting.cancel"), role: .cancel) {}
     }
     

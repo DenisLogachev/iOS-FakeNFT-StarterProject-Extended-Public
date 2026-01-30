@@ -8,12 +8,23 @@
 import Foundation
 import Observation
 
+enum OrderSortOption {
+    case byPrice
+    case byRating
+    case byName
+}
+
 @Observable
 @MainActor
 final class OrderViewModel {
     
     var orderItems: [OrderItem] = []
     var isLoading: Bool = false
+    var loadError: String?
+    private(set) var currentSortOption: OrderSortOption = .byPrice
+    
+    private let orderService: OrderService
+    private let nftService: NftService
     
     // MARK: - Computed Properties
     var isEmpty: Bool {
@@ -24,36 +35,79 @@ final class OrderViewModel {
         orderItems.reduce(Decimal(0)) { $0 + $1.price }
     }
     
-    init() {
-        loadMockData()
-    }
-    
-    // MARK: - Private Methods
-    private func loadMockData() {
-        let mockData: [(id: String, price: String, imageIndices: [Int])] = [
-            ("mock-nft-1", "1.5", [1, 2]),
-            ("mock-nft-2", "2.3", [3, 4]),
-            ("mock-nft-3", "0.8", [5, 6])
-        ]
-        
-        orderItems = mockData.map { data in
-            let images = data.imageIndices.map { index in
-                URL(string: "https://picsum.photos/200/200?random=\(index)")!
-            }
-            return OrderItem(
-                nft: Nft(id: data.id, images: images),
-                price: Decimal(string: data.price)!
-            )
-        }
+    init(orderService: OrderService, nftService: NftService) {
+        self.orderService = orderService
+        self.nftService = nftService
     }
     
     // MARK: - Public Methods
+    func loadOrder() async {
+        isLoading = true
+        loadError = nil
+        defer { isLoading = false }
+        
+        do {
+            let order = try await orderService.loadOrder()
+            guard !order.nfts.isEmpty else {
+                orderItems = []
+                return
+            }
+            var items: [OrderItem] = []
+            for nftId in order.nfts {
+                let nft = try await nftService.loadNft(id: nftId)
+                items.append(OrderItem(nft: nft, price: Decimal(nft.price)))
+            }
+            orderItems = items
+            applySort(by: currentSortOption)
+        } catch {
+            loadError = networkErrorMessage(for: error)
+            orderItems = []
+        }
+    }
+    
+    func dismissLoadError() {
+        loadError = nil
+    }
+    
+    func applySort(by option: OrderSortOption) {
+        currentSortOption = option
+        switch option {
+        case .byPrice:
+            orderItems.sort { $0.price < $1.price }
+        case .byRating:
+            orderItems.sort { $0.nft.rating > $1.nft.rating }
+        case .byName:
+            orderItems.sort { $0.nft.name.localizedStandardCompare($1.nft.name) == .orderedAscending }
+        }
+    }
+    
     func deleteItem(byId id: String) {
         orderItems = orderItems.filter { $0.id != id }
+        Task {
+            do {
+                _ = try await orderService.updateOrder(nftIds: orderItems.map(\.id))
+            } catch {
+                loadError = networkErrorMessage(for: error)
+                await loadOrder()
+            }
+        }
     }
     
     func clearCart() {
         orderItems = []
     }
+    
+    func performPayment(currencyId: String) async throws {
+        let response = try await orderService.setCurrency(currencyId: currencyId)
+        guard response.success else {
+            throw NSError(domain: "Order", code: -1, userInfo: [
+                NSLocalizedDescriptionKey: String(localized: "Payment.error.title")
+            ])
+        }
+        _ = try? await orderService.updateOrder(nftIds: [])
+    }
+    
+    private func networkErrorMessage(for error: Error) -> String {
+        (error as? URLError)?.localizedDescription ?? String(localized: "Error.network")
+    }
 }
-
