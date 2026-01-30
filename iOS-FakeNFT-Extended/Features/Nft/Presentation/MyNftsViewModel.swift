@@ -13,8 +13,6 @@ enum MyNftsState: Sendable {
     case empty
 }
 
-import Foundation
-
 @Observable
 @MainActor
 final class MyNftsViewModel {
@@ -24,7 +22,8 @@ final class MyNftsViewModel {
     private(set) var state: MyNftsState = .idle
     private(set) var isLoading: Bool = false
 
-    private var hasLoadedOnce = false
+    private var likedIds: Set<String> = []
+
     private var isLoadingTaskRunning = false
 
     init(nftService: NftService, myNftsStore: MyNftsStore) {
@@ -43,7 +42,6 @@ final class MyNftsViewModel {
         let ids = await myNftsStore.getMyNftIds()
         guard !ids.isEmpty else {
             state = .empty
-            hasLoadedOnce = true
             return
         }
 
@@ -55,12 +53,19 @@ final class MyNftsViewModel {
             let ordered = ids.compactMap { id in loadedNfts.first(where: { $0.id == id }) }
             state = .loaded(ordered)
         }
-
-        hasLoadedOnce = true
     }
 
-    func toggleLike(id: String) { }
-    func isLiked(id: String) -> Bool { false }
+    func toggleLike(id: String) {
+        if likedIds.contains(id) {
+            likedIds.remove(id)
+        } else {
+            likedIds.insert(id)
+        }
+    }
+
+    func isLiked(id: String) -> Bool {
+        likedIds.contains(id)
+    }
 
     private func loadNftsIgnoringFailures(ids: [String]) async -> [Nft] {
         await withTaskGroup(of: Nft?.self) { group in
