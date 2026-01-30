@@ -19,18 +19,38 @@ final class CatalogVM {
     var showError = false
     var errorMessage = ""
     
-    //TODO: let apiClient = ...
+    private let apiClient: APIClientProtocol
     
-    init() {
+    init(apiClient: APIClientProtocol) {
+        self.apiClient = apiClient
+        
         Task { await loadData() }
     }
     
-    //TODO: add collection cover fetching
+    func sortedCollections(by sortOption: SortOption) -> [NFTCollection] {
+        switch sortOption {
+        case .byName:
+            collections.sorted { $0.name < $1.name }
+        case .byNFTCount:
+            collections.sorted { $0.uniqueNfts.count > $1.uniqueNfts.count }
+        }
+    }
+    
     func loadCollectionsCoverImages(for collections: [NFTCollection]) async {
         await withThrowingTaskGroup(of: Void.self) { group in
             for collection in collections {
                 group.addTask {
-                    await MainActor.run { self.collectionCovers[collection.id] = Image(.peachGroup) }
+                    guard let url = URL(string: collection.cover) else {
+                        throw NetworkError.invalidURL
+                    }
+                    
+                    let (data, _) = try await URLSession.shared.data(from: url)
+                    
+                    if let uiImage = UIImage(data: data) {
+                        await MainActor.run { self.collectionCovers[collection.id] = Image(uiImage: uiImage) }
+                    } else {
+                        throw NetworkError.invalidURL
+                    }
                 }
             }
         }
@@ -42,22 +62,42 @@ final class CatalogVM {
         return try await loadNFTs(for: collection)
     }
     
-    //TODO: add concurrent NFTItems fetching
     func loadNFTs(for collection: NFTCollection) async throws -> [String: NFTItem?] {
-        let mocks = NFTItem.mockNFTs
-        return mocks.reduce(into: [:]) { result, mock in
-            result[mock.id] = mock
+        try await withThrowingTaskGroup(of: NFTItem?.self) { group in
+            
+            var fetchedNFTs: [String : NFTItem] = [:]
+            fetchedNFTs.reserveCapacity(collection.nfts.count)
+            
+            for nftId in collection.nfts {
+                group.addTask {
+                    try? await self.apiClient.fetchNFT(id: nftId)
+                }
+            }
+            
+            for try await nft in group {
+                if let nft {
+                    fetchedNFTs[nft.id] = nft
+                }
+            }
+            
+            if fetchedNFTs.isEmpty {
+                throw NFTFetchError.failedToFetchNFTs
+            }
+            
+            return fetchedNFTs
         }
     }
-    
-    //TODO: 1) add collections fetching
-    //TODO: 2) add collections covers fetching (for passing to collectionView without refetching)
+
     func loadData() async {
         isLoading = true
         defer { isLoading = false }
         
-        collections = NFTCollection.mockCollections
-        await loadCollectionsCoverImages(for: collections)
+        do {
+            collections = try await apiClient.fetchAllCollections()
+            await loadCollectionsCoverImages(for: collections)
+        } catch {
+            handleError(error)
+        }
     }
     
     func tryAgain() async {

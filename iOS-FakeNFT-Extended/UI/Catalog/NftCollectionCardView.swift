@@ -22,7 +22,7 @@ struct NftCollectionCardView: View {
                 fetchImage(for: nftCollection)
             }
   
-            Text("\(nftCollection.name) (\(nftCollection.nfts.count))")
+            Text("\(nftCollection.name) (\(nftCollection.uniqueNfts.count))")
                 .font(.system(size: 17, weight: .bold))
                 .foregroundStyle(.black)
         }
@@ -89,6 +89,6 @@ struct NftCollectionCardView: View {
 #Preview {
     NftCollectionCardView(nftCollection: NFTCollection.mockCollections.first!, collectionCover: Image(.peachGroup))
         .environment(NavigationRouter())
-        .environment(CatalogVM())
+        .environment(CatalogVM(apiClient: MockAPIClient()))
 }
 

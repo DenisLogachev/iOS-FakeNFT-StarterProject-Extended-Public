@@ -220,5 +220,5 @@ struct CollectionView: View {
 #Preview {
     CollectionView(nftCollection: NFTCollection.mockCollections.first!, coverImage: Image(.peachGroup))
         .environment(NavigationRouter())
-        .environment(CatalogVM())
+        .environment(CatalogVM(apiClient: MockAPIClient()))
 }

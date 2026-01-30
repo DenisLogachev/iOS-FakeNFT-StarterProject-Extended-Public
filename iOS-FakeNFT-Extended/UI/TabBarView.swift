@@ -1,14 +1,25 @@
 import SwiftUI
 
 struct TabBarView: View {
-    @Environment(NavigationRouter.self) var navigationRouter
+    @Environment(NavigationRouter.self) private var navigationRouter
+    @Environment(CatalogVM.self) private var catalogVM
     
     var body: some View {
         @Bindable var navigationRouter = navigationRouter
+        @Bindable var catalogVM = catalogVM
         
         TabView {
             NavigationStack(path: $navigationRouter.path) {
                 CatalogMainView()
+                    .alert("Не удалось получить данные", isPresented: $catalogVM.showError) {
+                        Button("Отмена", role: .cancel) {
+                            catalogVM.showError = false
+                        }
+                        
+                        Button("Повторить") {
+                            Task { await catalogVM.refreshData() }
+                        }
+                    }
             }
             .tabItem {
                 Label(

@@ -12,6 +12,8 @@ struct CatalogMainView: View {
     @Environment(NavigationRouter.self) var navRouter
     @Environment(CatalogVM.self) var catalogVM
     
+    @AppStorage(SortOption.storedKey) private var sortOption: SortOption = .byName
+    
     @State private var isShowingSortMenu: Bool = false
     
     var body: some View {
@@ -29,7 +31,7 @@ struct CatalogMainView: View {
             
             ScrollView(.vertical) {
                 LazyVStack(spacing: 21) {
-                    ForEach(catalogVM.collections) { collection in
+                    ForEach(catalogVM.sortedCollections(by: sortOption)) { collection in
                         Button {
                             navRouter.navigate(to: .collection(collection))
                         } label: {
@@ -45,17 +47,13 @@ struct CatalogMainView: View {
                     .animation(.easeIn, value: catalogVM.isLoading)
             }
         }
-        .padding(16)
+        .padding(.horizontal, 16)
         .confirmationDialog("Сортировка", isPresented: $isShowingSortMenu, titleVisibility: .visible) {
             Button("По названию") {
-                
-                //TODO: add sort
-                
+                sortOption = .byName
             }
             Button("По количеству NFT") {
-                
-                //TODO: add another sort
-                
+                sortOption = .byNFTCount
             }
             Button("Закрыть", role: .cancel) {
                 
@@ -72,11 +70,8 @@ struct CatalogMainView: View {
         switch destination {
         case .collection(let collection):
             CollectionView(nftCollection: collection, coverImage: catalogVM.collectionCovers[collection.id])
-        case .author(let authorURL):
+        case .author:
             AuthorView()
-            
-            //TODO: add other destinations
-            
         }
     }
 }
@@ -84,5 +79,5 @@ struct CatalogMainView: View {
 #Preview {
     CatalogMainView()
         .environment(NavigationRouter())
-        .environment(CatalogVM())
+        .environment(CatalogVM(apiClient: MockAPIClient()))
 }
