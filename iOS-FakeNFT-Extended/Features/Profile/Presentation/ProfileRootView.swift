@@ -10,10 +10,19 @@ import SwiftUI
 struct ProfileRootView: View {
     @Bindable var viewModel: ProfileViewModel
     private let profileService: ProfileService
+    private let nftService: NftService
+    private let myNftsStore: MyNftsStore // ✅
 
-    init(viewModel: ProfileViewModel, profileService: ProfileService) {
+    init(
+        viewModel: ProfileViewModel,
+        profileService: ProfileService,
+        nftService: NftService,
+        myNftsStore: MyNftsStore // ✅
+    ) {
         self.viewModel = viewModel
         self.profileService = profileService
+        self.nftService = nftService
+        self.myNftsStore = myNftsStore // ✅
     }
 
     var body: some View {
@@ -31,8 +40,16 @@ struct ProfileRootView: View {
     @ViewBuilder
     private func destination(for route: ProfileRoute) -> some View {
         switch route {
-        case .myNfts, .favourites:
+        case .favourites:
             EmptyView()
+
+        case .myNfts:
+            MyNftsView(
+                viewModel: MyNftsViewModel(
+                    nftService: nftService,
+                    myNftsStore: myNftsStore
+                )
+            )
 
         case .editProfile(let profileId):
             if case .loaded(let profile) = viewModel.state {

@@ -33,3 +33,9 @@
 "Profile.edit.photo.change" = "Изменить фото";
 "Profile.edit.photo.delete" = "Удалить фото";
 "Profile.edit.photo.url.title" = "Ссылка на фото";
+
+/* NFT */
+"MyNfts.title" = "Мои NFT";
+"MyNfts.empty" = "У вас ещё нет NFT";
+"MyNfts.price" = "Цена";
+"MyNfts.author" = "От %@";

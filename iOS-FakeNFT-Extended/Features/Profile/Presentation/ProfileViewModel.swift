@@ -15,7 +15,6 @@ enum ProfileState: Sendable {
 @Observable
 @MainActor
 final class ProfileViewModel {
-
     private(set) var path: [ProfileRoute] = []
     private(set) var state: ProfileState = .idle
     private(set) var isLoading: Bool = false
@@ -24,14 +23,24 @@ final class ProfileViewModel {
     private let profileId: Int
     private var hasLoaded = false
 
-    init(service: ProfileService, profileId: Int = 1) {
+    private let myNftsStore: MyNftsStore
+    private(set) var myNftsCount: Int = 0
+
+    init(
+        service: ProfileService,
+        myNftsStore: MyNftsStore,
+        profileId: Int = 1
+    ) {
         self.service = service
+        self.myNftsStore = myNftsStore
         self.profileId = profileId
     }
 
     func load() async {
         guard !hasLoaded else { return }
         hasLoaded = true
+
+        await refreshMyNftsCount()
 
         if let cached = await service.cachedProfile(id: profileId) {
             state = .loaded(cached)
@@ -43,8 +52,15 @@ final class ProfileViewModel {
         if let fresh = await service.fetchProfile(id: profileId) {
             state = .loaded(fresh)
         }
+
+        await refreshMyNftsCount()
     }
-    
+
+    func refreshMyNftsCount() async {
+        let ids = await myNftsStore.getMyNftIds()
+        myNftsCount = ids.count
+    }
+
     func setPath(_ newValue: [ProfileRoute]) {
         path = newValue
     }
@@ -68,7 +84,7 @@ final class ProfileViewModel {
     private func setLoading(_ value: Bool) {
         isLoading = value
     }
-    
+
     func applyUpdatedProfile(_ profile: Profile) {
         state = .loaded(profile)
     }

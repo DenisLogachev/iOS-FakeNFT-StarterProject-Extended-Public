@@ -5,10 +5,17 @@ struct TabBarView: View {
 
     var body: some View {
         TabView {
-            ProfileTabView(profileService: servicesAssembly.profileService)
-                .tabItem {
-                    Label(NSLocalizedString("Tab.profile", comment: ""), image: .icProfileTabBar)
-                }
+            ProfileTabView(
+                profileService: servicesAssembly.profileService,
+                nftService: servicesAssembly.nftService,
+                myNftsStore: servicesAssembly.myNftsStoreService
+            )
+            .tabItem {
+                Label(
+                    NSLocalizedString("Tab.profile", comment: ""),
+                    image: .icProfileTabBar
+                )
+            }
         }
     }
 }

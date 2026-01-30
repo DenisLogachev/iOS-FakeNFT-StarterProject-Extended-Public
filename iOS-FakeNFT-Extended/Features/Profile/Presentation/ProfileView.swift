@@ -107,12 +107,13 @@ struct ProfileView: View {
                 ProfileMenuRowContent(
                     title: String(
                         format: NSLocalizedString("Profile.menu.myNfts", comment: ""),
-                        profile.nftCount
+                        viewModel.myNftsCount
                     )
                 )
             }
             .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
             .listRowSeparator(.hidden)
+            .buttonStyle(.plain)
 
             Button { viewModel.openFavourites() } label: {
                 ProfileMenuRowContent(
@@ -122,6 +123,7 @@ struct ProfileView: View {
                     )
                 )
             }
+            .buttonStyle(.plain)
             .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
             .listRowSeparator(.hidden)
         }
