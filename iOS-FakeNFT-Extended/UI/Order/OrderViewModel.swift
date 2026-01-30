@@ -52,10 +52,18 @@ final class OrderViewModel {
                 orderItems = []
                 return
             }
-            var items: [OrderItem] = []
-            for nftId in order.nfts {
-                let nft = try await nftService.loadNft(id: nftId)
-                items.append(OrderItem(nft: nft, price: Decimal(nft.price)))
+            let items: [OrderItem] = try await withThrowingTaskGroup(of: OrderItem.self) { group in
+                for nftId in order.nfts {
+                    group.addTask {
+                        let nft = try await self.nftService.loadNft(id: nftId)
+                        return OrderItem(nft: nft, price: Decimal(nft.price))
+                    }
+                }
+                var collected: [OrderItem] = []
+                for try await item in group {
+                    collected.append(item)
+                }
+                return collected
             }
             orderItems = items
             applySort(by: currentSortOption)
