@@ -11,18 +11,18 @@ struct ProfileRootView: View {
     @Bindable var viewModel: ProfileViewModel
     private let profileService: ProfileService
     private let nftService: NftService
-    private let myNftsStore: MyNftsStore // ✅
+    private let myNftsStore: MyNftsStore
 
     init(
         viewModel: ProfileViewModel,
         profileService: ProfileService,
         nftService: NftService,
-        myNftsStore: MyNftsStore // ✅
+        myNftsStore: MyNftsStore
     ) {
         self.viewModel = viewModel
         self.profileService = profileService
         self.nftService = nftService
-        self.myNftsStore = myNftsStore // ✅
+        self.myNftsStore = myNftsStore
     }
 
     var body: some View {

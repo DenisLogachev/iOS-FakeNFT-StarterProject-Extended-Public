@@ -21,7 +21,11 @@ struct RemoteImageView<Placeholder: View>: View {
                     .resizable()
                     .scaledToFill()
             } else {
-                placeholder()
+                ZStack {
+                    placeholder()
+
+                    ProgressView()
+                }
             }
         }
         .task(id: url?.absoluteString) {
