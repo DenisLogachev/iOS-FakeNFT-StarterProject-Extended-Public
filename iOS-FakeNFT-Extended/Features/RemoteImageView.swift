@@ -24,7 +24,9 @@ struct RemoteImageView<Placeholder: View>: View {
                 ZStack {
                     placeholder()
 
-                    ProgressView()
+                    if isLoading {
+                        ProgressView()
+                    }
                 }
             }
         }
