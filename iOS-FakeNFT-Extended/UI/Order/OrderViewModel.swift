@@ -8,10 +8,26 @@
 import Foundation
 import Observation
 
-enum OrderSortOption {
-    case byPrice
-    case byRating
-    case byName
+enum OrderSortOption: String, CaseIterable {
+    case byPrice = "byPrice"
+    case byRating = "byRating"
+    case byName = "byName"
+}
+
+private enum OrderSortStorage {
+    static let key = "Order.sortOption"
+    
+    static func load() -> OrderSortOption {
+        guard let raw = UserDefaults.standard.string(forKey: key),
+              let option = OrderSortOption(rawValue: raw) else {
+            return .byName
+        }
+        return option
+    }
+    
+    static func save(_ option: OrderSortOption) {
+        UserDefaults.standard.set(option.rawValue, forKey: key)
+    }
 }
 
 @Observable
@@ -21,7 +37,7 @@ final class OrderViewModel {
     var orderItems: [OrderItem] = []
     var isLoading: Bool = false
     var loadError: String?
-    private(set) var currentSortOption: OrderSortOption = .byPrice
+    private(set) var currentSortOption: OrderSortOption
     
     private let orderService: OrderService
     private let nftService: NftService
@@ -38,6 +54,7 @@ final class OrderViewModel {
     init(orderService: OrderService, nftService: NftService) {
         self.orderService = orderService
         self.nftService = nftService
+        self.currentSortOption = OrderSortStorage.load()
     }
     
     // MARK: - Public Methods
@@ -79,6 +96,7 @@ final class OrderViewModel {
     
     func applySort(by option: OrderSortOption) {
         currentSortOption = option
+        OrderSortStorage.save(option)
         switch option {
         case .byPrice:
             orderItems.sort { $0.price < $1.price }
