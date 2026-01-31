@@ -11,7 +11,7 @@ struct CurrencySelectionView: View {
     @Bindable var viewModel: CurrencySelectionViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var showTermsOfUse = false
-    let onPayTap: (String) -> Void
+    let onPayTap: () -> Void
     
     // MARK: - Computed Properties
     private static let columns = [
@@ -68,11 +68,7 @@ struct CurrencySelectionView: View {
                         showTermsOfUse = true
                     },
                     onPayTap: {
-                        if let currencyId = viewModel.selectedCurrency?.id {
-                            onPayTap(currencyId)
-                        } else {
-                            viewModel.showPaymentError(String(localized: "Payment.error.title"))
-                        }
+                        viewModel.showPaymentError(String(localized: "Payment.error.title"))
                     }
                 )
             }
@@ -107,5 +103,5 @@ struct CurrencySelectionView: View {
         nftStorage: NftStorageImpl()
     )
     let viewModel = CurrencySelectionViewModel(currencyService: servicesAssembly.currencyService)
-    return CurrencySelectionView(viewModel: viewModel, onPayTap: { _ in })
+    return CurrencySelectionView(viewModel: viewModel, onPayTap: {})
 }

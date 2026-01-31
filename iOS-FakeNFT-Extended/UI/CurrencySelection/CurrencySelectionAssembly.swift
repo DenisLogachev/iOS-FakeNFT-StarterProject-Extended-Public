@@ -16,7 +16,7 @@ final class CurrencySelectionAssembly {
         self.servicesAssembler = servicesAssembler
     }
     
-    func build(onPayTap: @escaping (String) -> Void) -> some View {
+    func build(onPayTap: @escaping () -> Void) -> some View {
         let viewModel = CurrencySelectionViewModel(currencyService: servicesAssembler.currencyService)
         return CurrencySelectionView(viewModel: viewModel, onPayTap: onPayTap)
     }
