@@ -17,7 +17,10 @@ final class OrderAssembly {
     }
     
     func build() -> OrderView {
-        let viewModel = OrderViewModel()
+        let viewModel = OrderViewModel(
+            orderService: servicesAssembler.orderService,
+            nftService: servicesAssembler.nftService
+        )
         let currencySelectionAssembly = CurrencySelectionAssembly(servicesAssembler: servicesAssembler)
         return OrderView(
             viewModel: viewModel,
