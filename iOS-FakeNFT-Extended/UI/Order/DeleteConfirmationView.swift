@@ -49,3 +49,19 @@ struct DeleteConfirmationView: View {
         }
     }
 }
+
+// MARK: - Preview
+#Preview {
+    let previewURL = URL(string: "https://picsum.photos/200/200?random=1")!
+    return DeleteConfirmationView(
+        item: OrderItem(
+            nft: Nft(
+                id: "preview-nft-123",
+                images: [previewURL]
+            ),
+            price: Decimal(string: "1.5")!
+        ),
+        isPresented: .constant(true),
+        onDelete: {}
+    )
+}
