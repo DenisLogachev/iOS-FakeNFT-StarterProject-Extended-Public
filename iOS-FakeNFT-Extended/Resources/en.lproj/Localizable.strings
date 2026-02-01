@@ -25,7 +25,7 @@
 "Profile.edit.name.title" = "Имя";
 "Profile.edit.description.title" = "Описание";
 "Profile.edit.website.title" = "Сайт";
-"Profile.edit.exit.title" = "Уверены,\nчто хотите выйти?";
+"Profile.edit.exit.title" = "Уверены, что хотите выйти?";
 "Profile.edit.exit.stay" = "Остаться";
 "Profile.edit.exit.leave" = "Выйти";
 
