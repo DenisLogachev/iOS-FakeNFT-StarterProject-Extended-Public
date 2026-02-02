@@ -28,6 +28,9 @@ final class MyNftsViewModel {
     private var likedIds: Set<String> = []
     private var isLoadingTaskRunning = false
 
+    private var allNfts: [Nft] = []
+    private(set) var sortType: MyNftsSortType = .byName
+
     init(
         nftService: NftService,
         myNftsStore: MyNftsStore,
@@ -57,14 +60,23 @@ final class MyNftsViewModel {
             return
         }
 
-        let loadedNfts = await loadNftsIgnoringFailures(ids: ids)
+        let loadedNfts = await loadNfts(ids: ids)
 
-        if loadedNfts.isEmpty {
+        guard !loadedNfts.isEmpty else {
             state = .empty
-        } else {
-            let ordered = ids.compactMap { id in loadedNfts.first(where: { $0.id == id }) }
-            state = .loaded(ordered)
+            return
         }
+
+        let ordered = ids.compactMap { id in loadedNfts.first(where: { $0.id == id }) }
+
+        allNfts = ordered
+        applySorting()
+    }
+
+    func setSortType(_ newType: MyNftsSortType) {
+        guard sortType != newType else { return }
+        sortType = newType
+        applySorting()
     }
 
     func toggleLike(id: String) {
@@ -75,6 +87,67 @@ final class MyNftsViewModel {
 
     func isLiked(id: String) -> Bool {
         likedIds.contains(id)
+    }
+
+    private func applySorting() {
+        guard !allNfts.isEmpty else {
+            state = .empty
+            return
+        }
+
+        let sorted = sort(allNfts, by: sortType)
+        state = .loaded(sorted)
+    }
+
+    private func sort(_ nfts: [Nft], by type: MyNftsSortType) -> [Nft] {
+        switch type {
+        case .byName:
+            return nfts.sorted { leftNft, rightNft in
+                let leftName = (leftNft.name ?? "")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                let rightName = (rightNft.name ?? "")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+
+                if leftName.isEmpty { return false }
+                if rightName.isEmpty { return true }
+
+                return leftName.localizedCaseInsensitiveCompare(rightName) == .orderedAscending
+            }
+
+        case .byPrice:
+            return nfts.sorted { leftNft, rightNft in
+                switch (leftNft.price, rightNft.price) {
+                case let (leftPrice?, rightPrice?):
+                    return leftPrice < rightPrice
+
+                case (nil, _?):
+                    return false
+
+                case (_?, nil):
+                    return true
+
+                case (nil, nil):
+                    return false
+                }
+            }
+
+        case .byRating:
+            return nfts.sorted { leftNft, rightNft in
+                switch (leftNft.rating, rightNft.rating) {
+                case let (leftRating?, rightRating?):
+                    return leftRating > rightRating
+
+                case (nil, _?):
+                    return false
+
+                case (_?, nil):
+                    return true
+
+                case (nil, nil):
+                    return false
+                }
+            }
+        }
     }
 
     private func toggleLikeAsync(id: String) async {
@@ -93,13 +166,12 @@ final class MyNftsViewModel {
         likedIds = Set(updatedLikes)
     }
 
-    private func loadNftsIgnoringFailures(ids: [String]) async -> [Nft] {
+    private func loadNfts(ids: [String]) async -> [Nft] {
         await withTaskGroup(of: Nft?.self) { group in
             for id in ids {
                 group.addTask { [nftService] in
-                    do {
-                        return try await nftService.loadNft(id: id)
-                    } catch {
+                    do { return try await nftService.loadNft(id: id) }
+                    catch {
                         debugPrint("MyNfts load failed for id=\(id):", error)
                         return nil
                     }
@@ -112,7 +184,6 @@ final class MyNftsViewModel {
             for await nft in group {
                 if let nft { result.append(nft) }
             }
-
             return result
         }
     }

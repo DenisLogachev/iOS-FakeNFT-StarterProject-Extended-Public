@@ -10,6 +10,7 @@ import SwiftUI
 struct MyNftsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel: MyNftsViewModel
+    @State private var isSortDialogPresented = false
 
     private enum Layout {
         static let horizontalPadding: CGFloat = 16
@@ -44,11 +45,34 @@ struct MyNftsView: View {
             }
 
             ToolbarItem(placement: .topBarTrailing) {
-                Button { } label: { Image(.icSort) }
-                    .buttonStyle(.plain)
+                Button {
+                    isSortDialogPresented = true
+                } label: {
+                    Image(.icSort)
+                }
+                .buttonStyle(.plain)
             }
         }
         .task { await viewModel.load() }
+        .confirmationDialog(
+            NSLocalizedString("MyNfts.sort.title", comment: ""),
+            isPresented: $isSortDialogPresented,
+            titleVisibility: .visible
+        ) {
+            Button(NSLocalizedString("MyNfts.sort.byPrice", comment: "")) {
+                viewModel.setSortType(.byPrice)
+            }
+
+            Button(NSLocalizedString("MyNfts.sort.byRating", comment: "")) {
+                viewModel.setSortType(.byRating)
+            }
+
+            Button(NSLocalizedString("MyNfts.sort.byName", comment: "")) {
+                viewModel.setSortType(.byName)
+            }
+
+            Button(NSLocalizedString("MyNfts.sort.close", comment: ""), role: .cancel) { }
+        }
     }
 
     @ViewBuilder
