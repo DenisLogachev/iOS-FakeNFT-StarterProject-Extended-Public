@@ -1,5 +1,5 @@
 //
-//  MyNftsStoreImpl.swift
+//  MyNftsStore.swift
 //  iOS-FakeNFT-Extended
 //
 //  Created by Aida Zhdanova on 30.01.2026.

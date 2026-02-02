@@ -4,8 +4,7 @@ protocol NftService {
     func loadNft(id: String) async throws -> Nft
 }
 
-@MainActor
-final class NftServiceImpl: NftService {
+actor NftServiceImpl: NftService {
 
     private let networkClient: NetworkClient
     private let storage: NftStorage
@@ -16,8 +15,8 @@ final class NftServiceImpl: NftService {
     }
 
     func loadNft(id: String) async throws -> Nft {
-        if let nft = await storage.getNft(with: id) {
-            return nft
+        if let cachedNft = await storage.getNft(with: id) {
+            return cachedNft
         }
 
         let request = NFTRequest(id: id)

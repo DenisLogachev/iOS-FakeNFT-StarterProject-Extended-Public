@@ -20,6 +20,7 @@ final class MyNftsViewModel {
     private let myNftsStore: MyNftsStore
     private let profileService: ProfileService
     private let profileId: Int
+    private let sortStorage: MyNftsSortStorage
 
     private(set) var state: MyNftsState = .idle
     private(set) var isLoading: Bool = false
@@ -29,18 +30,22 @@ final class MyNftsViewModel {
     private var isLoadingTaskRunning = false
 
     private var allNfts: [Nft] = []
-    private(set) var sortType: MyNftsSortType = .byName
+    private(set) var sortType: MyNftsSortType = .defaultValue
+
+    private var hasRestoredSort = false
 
     init(
         nftService: NftService,
         myNftsStore: MyNftsStore,
         profileService: ProfileService,
-        profileId: Int
+        profileId: Int,
+        sortStorage: MyNftsSortStorage = MyNftsSortStorageImpl()
     ) {
         self.nftService = nftService
         self.myNftsStore = myNftsStore
         self.profileService = profileService
         self.profileId = profileId
+        self.sortStorage = sortStorage
     }
 
     func load() async {
@@ -50,6 +55,11 @@ final class MyNftsViewModel {
 
         isLoading = true
         defer { isLoading = false }
+
+        if !hasRestoredSort {
+            hasRestoredSort = true
+            sortType = await sortStorage.loadSortType()
+        }
 
         let likes = await profileService.getProfileLikes(id: profileId)
         likedIds = Set(likes)
@@ -61,15 +71,14 @@ final class MyNftsViewModel {
         }
 
         let loadedNfts = await loadNfts(ids: ids)
-
         guard !loadedNfts.isEmpty else {
             state = .empty
             return
         }
 
         let ordered = ids.compactMap { id in loadedNfts.first(where: { $0.id == id }) }
-
         allNfts = ordered
+
         applySorting()
     }
 
@@ -77,6 +86,10 @@ final class MyNftsViewModel {
         guard sortType != newType else { return }
         sortType = newType
         applySorting()
+
+        Task {
+            await sortStorage.saveSortType(newType)
+        }
     }
 
     func toggleLike(id: String) {
@@ -94,57 +107,42 @@ final class MyNftsViewModel {
             state = .empty
             return
         }
-
-        let sorted = sort(allNfts, by: sortType)
-        state = .loaded(sorted)
+        state = .loaded(sort(allNfts, by: sortType))
     }
 
     private func sort(_ nfts: [Nft], by type: MyNftsSortType) -> [Nft] {
         switch type {
         case .byName:
             return nfts.sorted { leftNft, rightNft in
-                let leftName = (leftNft.name ?? "")
-                    .trimmingCharacters(in: .whitespacesAndNewlines)
-                let rightName = (rightNft.name ?? "")
-                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                let leftName = (leftNft.name ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                let rightName = (rightNft.name ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
 
-                if leftName.isEmpty { return false }
-                if rightName.isEmpty { return true }
-
-                return leftName.localizedCaseInsensitiveCompare(rightName) == .orderedAscending
+                switch (leftName.isEmpty, rightName.isEmpty) {
+                case (false, true): return true
+                case (true, false): return false
+                case (true, true): return false
+                case (false, false):
+                    return leftName.localizedCaseInsensitiveCompare(rightName) == .orderedAscending
+                }
             }
 
         case .byPrice:
             return nfts.sorted { leftNft, rightNft in
                 switch (leftNft.price, rightNft.price) {
-                case let (leftPrice?, rightPrice?):
-                    return leftPrice < rightPrice
-
-                case (nil, _?):
-                    return false
-
-                case (_?, nil):
-                    return true
-
-                case (nil, nil):
-                    return false
+                case let (leftPrice?, rightPrice?): return leftPrice < rightPrice
+                case (nil, _?): return false
+                case (_?, nil): return true
+                case (nil, nil): return false
                 }
             }
 
         case .byRating:
             return nfts.sorted { leftNft, rightNft in
                 switch (leftNft.rating, rightNft.rating) {
-                case let (leftRating?, rightRating?):
-                    return leftRating > rightRating
-
-                case (nil, _?):
-                    return false
-
-                case (_?, nil):
-                    return true
-
-                case (nil, nil):
-                    return false
+                case let (leftRating?, rightRating?): return leftRating > rightRating
+                case (nil, _?): return false
+                case (_?, nil): return true
+                case (nil, nil): return false
                 }
             }
         }

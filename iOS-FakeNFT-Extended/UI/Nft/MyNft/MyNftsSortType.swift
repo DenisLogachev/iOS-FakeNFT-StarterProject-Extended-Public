@@ -7,8 +7,10 @@
 
 import Foundation
 
-enum MyNftsSortType: Sendable {
+enum MyNftsSortType: String, CaseIterable, Sendable {
     case byName
     case byPrice
     case byRating
+
+    static let defaultValue: MyNftsSortType = .byRating
 }
