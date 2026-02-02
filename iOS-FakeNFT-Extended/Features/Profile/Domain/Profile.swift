@@ -33,15 +33,20 @@ extension Profile {
     }
 
     var displayWebsite: String? {
-        guard let website, !website.isEmpty else { return nil }
-        return website
+        guard let website else { return nil }
+        let trimmed = website.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? nil : trimmed
     }
 
     var nftCount: Int { nfts?.count ?? 0 }
     var likesCount: Int { likes?.count ?? 0 }
 
     var avatarURL: URL? {
-        guard let avatar, let url = URL(string: avatar) else { return nil }
-        return url
+        guard let avatar else { return nil }
+
+        let trimmed = avatar.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+
+        return URL(string: trimmed)
     }
 }

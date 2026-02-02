@@ -10,13 +10,35 @@ import SwiftUI
 struct ProfileTabView: View {
     @State private var viewModel: ProfileViewModel
 
-    init(profileService: ProfileService, profileId: Int = 1) {
+    private let profileService: ProfileService
+    private let nftService: NftService
+    private let myNftsStore: MyNftsStore
+
+    init(
+        profileService: ProfileService,
+        nftService: NftService,
+        myNftsStore: MyNftsStore,
+        profileId: Int = 1
+    ) {
+        self.profileService = profileService
+        self.nftService = nftService
+        self.myNftsStore = myNftsStore
+
         _viewModel = State(
-            initialValue: ProfileViewModel(service: profileService, profileId: profileId)
+            initialValue: ProfileViewModel(
+                service: profileService,
+                myNftsStore: myNftsStore,
+                profileId: profileId
+            )
         )
     }
 
     var body: some View {
-        ProfileRootView(viewModel: viewModel)
+        ProfileRootView(
+            viewModel: viewModel,
+            profileService: profileService,
+            nftService: nftService,
+            myNftsStore: myNftsStore
+        )
     }
 }

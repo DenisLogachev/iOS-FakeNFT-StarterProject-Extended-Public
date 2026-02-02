@@ -1,11 +1,41 @@
+/* Common */
+"Common.cancel" = "Отмена";
+"Common.save" = "Сохранить";
+
+/* Tabs */
 "Tab.catalog" = "Каталог";
 "Tab.profile" = "Профиль";
-"Catalog.openNft" = "Открыть Nft";
+
+/* Errors */
+"Error.title" = "Ошибка";
 "Error.network" = "Произошла ошибка сети";
 "Error.unknown" = "Произошла неизвестная ошибка";
 "Error.repeat" = "Повторить";
-"Error.title" = "Ошибка";
+
+/* Catalog */
+"Catalog.openNft" = "Открыть Nft";
+
+/* Profile */
 "Profile.name.fallback" = "Без имени";
 "Profile.description.fallback" = "Описание профиля отсутствует";
+
 "Profile.menu.myNfts" = "Мои NFT (%d)";
 "Profile.menu.favourites" = "Избранные NFT (%d)";
+
+"Profile.edit.name.title" = "Имя";
+"Profile.edit.description.title" = "Описание";
+"Profile.edit.website.title" = "Сайт";
+"Profile.edit.exit.title" = "Уверены, что хотите выйти?";
+"Profile.edit.exit.stay" = "Остаться";
+"Profile.edit.exit.leave" = "Выйти";
+
+"Profile.edit.photo.title" = "Фото профиля";
+"Profile.edit.photo.change" = "Изменить фото";
+"Profile.edit.photo.delete" = "Удалить фото";
+"Profile.edit.photo.url.title" = "Ссылка на фото";
+
+/* NFT */
+"MyNfts.title" = "Мои NFT";
+"MyNfts.empty" = "У вас ещё нет NFT";
+"MyNfts.price" = "Цена";
+"MyNfts.author" = "От %@";

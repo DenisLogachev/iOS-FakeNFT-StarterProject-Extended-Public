@@ -107,12 +107,13 @@ struct ProfileView: View {
                 ProfileMenuRowContent(
                     title: String(
                         format: NSLocalizedString("Profile.menu.myNfts", comment: ""),
-                        profile.nftCount
+                        viewModel.myNftsCount
                     )
                 )
             }
             .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
             .listRowSeparator(.hidden)
+            .buttonStyle(.plain)
 
             Button { viewModel.openFavourites() } label: {
                 ProfileMenuRowContent(
@@ -122,6 +123,7 @@ struct ProfileView: View {
                     )
                 )
             }
+            .buttonStyle(.plain)
             .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
             .listRowSeparator(.hidden)
         }
@@ -134,21 +136,8 @@ struct ProfileView: View {
     }
 
     private func avatar(url: URL?) -> some View {
-        Group {
-            if let url {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image.resizable().scaledToFill()
-                    case .failure, .empty:
-                        placeholderAvatar
-                    @unknown default:
-                        placeholderAvatar
-                    }
-                }
-            } else {
-                placeholderAvatar
-            }
+        RemoteImageView(url: url) {
+            placeholderAvatar
         }
     }
 
