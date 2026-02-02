@@ -45,3 +45,5 @@
 "MyNfts.sort.byName" = "По названию";
 "MyNfts.sort.byPrice" = "По цене";
 "MyNfts.sort.byRating" = "По рейтингу";
+"Profile.favouriteNFT" = "Избранные NFT";
+"Profile.emptyFavNft" = "У вас ещё нет избранных NFT";
