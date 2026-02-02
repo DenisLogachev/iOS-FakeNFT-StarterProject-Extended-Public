@@ -11,39 +11,36 @@ struct NFTPreviewLikeView: View {
     let imageURL: URL?
     let isLiked: Bool
     let size: CGFloat
-    let cornerRadius: CGFloat
     let buttonPadding: CGFloat
     let onToggleLike: () -> Void
 
-    init(
-        imageURL: URL?,
-        isLiked: Bool,
-        size: CGFloat,
-        cornerRadius: CGFloat = 12,
-        buttonPadding: CGFloat = 8,
-        onToggleLike: @escaping () -> Void
-    ) {
-        self.imageURL = imageURL
-        self.isLiked = isLiked
-        self.size = size
-        self.cornerRadius = cornerRadius
-        self.buttonPadding = buttonPadding
-        self.onToggleLike = onToggleLike
-    }
+    @State private var isImageLoaded = false
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
-            RemoteImageView(url: imageURL) {
+            RemoteImageView(
+                url: imageURL,
+                showsLoader: true,
+                onStateChange: { state in
+                    Task { @MainActor in
+                        isImageLoaded = (state == .success)
+                    }
+                }
+            ) {
                 Color(.ypLightGray)
             }
             .frame(width: size, height: size)
-            .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
 
-            Button(action: onToggleLike) {
-                Image(isLiked ? .icFavoritesSelected : .icFavoritesUnselected)
+            if isImageLoaded {
+                Button(action: onToggleLike) {
+                    Image(isLiked ? .icFavoritesSelected : .icFavoritesUnselected)
+                }
+                .buttonStyle(.plain)
+                .padding(buttonPadding)
+                .transition(.opacity)
             }
-            .buttonStyle(.plain)
-            .padding(buttonPadding)
         }
+        .animation(.easeInOut(duration: 0.15), value: isImageLoaded)
     }
 }
