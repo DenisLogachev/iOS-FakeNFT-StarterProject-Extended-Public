@@ -41,6 +41,10 @@ struct ProfileRootView: View {
             ProfileView(viewModel: viewModel)
                 .navigationDestination(for: ProfileRoute.self) { destination(for: $0) }
         }
+        .onChange(of: viewModel.path) { _, newPath in
+            guard newPath.isEmpty else { return }
+            Task { await viewModel.refresh() }
+        }
     }
 
     @ViewBuilder

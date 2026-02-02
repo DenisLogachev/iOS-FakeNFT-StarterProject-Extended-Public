@@ -51,7 +51,7 @@ final class FavouriteNftsViewModel {
             return
         }
 
-        let loaded = await loadNftsIgnoringFailures(ids: likes)
+        let loaded = await loadNfts(ids: likes)
         nftsById = Dictionary(uniqueKeysWithValues: loaded.map { ($0.id, $0) })
 
         let ordered = likes.compactMap { nftsById[$0] }
@@ -85,7 +85,7 @@ final class FavouriteNftsViewModel {
         state = ordered.isEmpty ? .empty : .loaded(ordered)
     }
 
-    private func loadNftsIgnoringFailures(ids: [String]) async -> [Nft] {
+    private func loadNfts(ids: [String]) async -> [Nft] {
         await withTaskGroup(of: Nft?.self) { group in
             for id in ids {
                 group.addTask { [nftService] in

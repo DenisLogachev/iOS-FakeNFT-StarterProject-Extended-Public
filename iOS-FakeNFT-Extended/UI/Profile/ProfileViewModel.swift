@@ -21,10 +21,12 @@ final class ProfileViewModel {
 
     private let service: ProfileService
     private let profileId: Int
-    private var hasLoaded = false
 
     private let myNftsStore: MyNftsStore
     private(set) var myNftsCount: Int = 0
+
+    private var hasLoaded = false
+    private var isRefreshing = false
 
     init(
         service: ProfileService,
@@ -39,18 +41,25 @@ final class ProfileViewModel {
     func load() async {
         guard !hasLoaded else { return }
         hasLoaded = true
+        await refresh()
+    }
+
+    func refresh() async {
+        guard !isRefreshing else { return }
+        isRefreshing = true
+        defer { isRefreshing = false }
 
         await refreshMyNftsCount()
 
-        if let cached = await service.cachedProfile(id: profileId) {
-            state = .loaded(cached)
+        if let cachedProfile = await service.cachedProfile(id: profileId) {
+            state = .loaded(cachedProfile)
         }
 
         setLoading(true)
         defer { setLoading(false) }
 
-        if let fresh = await service.fetchProfile(id: profileId) {
-            state = .loaded(fresh)
+        if let freshProfile = await service.fetchProfile(id: profileId) {
+            state = .loaded(freshProfile)
         }
 
         await refreshMyNftsCount()
@@ -81,11 +90,11 @@ final class ProfileViewModel {
         path.append(.website(url))
     }
 
-    private func setLoading(_ value: Bool) {
-        isLoading = value
-    }
-
     func applyUpdatedProfile(_ profile: Profile) {
         state = .loaded(profile)
+    }
+
+    private func setLoading(_ value: Bool) {
+        isLoading = value
     }
 }
