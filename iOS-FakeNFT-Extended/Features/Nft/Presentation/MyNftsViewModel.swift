@@ -18,17 +18,26 @@ enum MyNftsState: Sendable {
 final class MyNftsViewModel {
     private let nftService: NftService
     private let myNftsStore: MyNftsStore
+    private let profileService: ProfileService
+    private let profileId: Int
 
     private(set) var state: MyNftsState = .idle
     private(set) var isLoading: Bool = false
+    private(set) var isLikeUpdating: Bool = false
 
     private var likedIds: Set<String> = []
-
     private var isLoadingTaskRunning = false
 
-    init(nftService: NftService, myNftsStore: MyNftsStore) {
+    init(
+        nftService: NftService,
+        myNftsStore: MyNftsStore,
+        profileService: ProfileService,
+        profileId: Int
+    ) {
         self.nftService = nftService
         self.myNftsStore = myNftsStore
+        self.profileService = profileService
+        self.profileId = profileId
     }
 
     func load() async {
@@ -38,6 +47,9 @@ final class MyNftsViewModel {
 
         isLoading = true
         defer { isLoading = false }
+
+        let likes = await profileService.getProfileLikes(id: profileId)
+        likedIds = Set(likes)
 
         let ids = await myNftsStore.getMyNftIds()
         guard !ids.isEmpty else {
@@ -56,15 +68,29 @@ final class MyNftsViewModel {
     }
 
     func toggleLike(id: String) {
-        if likedIds.contains(id) {
-            likedIds.remove(id)
-        } else {
-            likedIds.insert(id)
+        Task { [weak self] in
+            await self?.toggleLikeAsync(id: id)
         }
     }
 
     func isLiked(id: String) -> Bool {
         likedIds.contains(id)
+    }
+
+    private func toggleLikeAsync(id: String) async {
+        guard !isLikeUpdating else { return }
+        isLikeUpdating = true
+        defer { isLikeUpdating = false }
+
+        let updatedLikes: [String]?
+        if likedIds.contains(id) {
+            updatedLikes = await profileService.removeLikeFromNft(profileId: profileId, nftId: id)
+        } else {
+            updatedLikes = await profileService.addLikeForNft(profileId: profileId, nftId: id)
+        }
+
+        guard let updatedLikes else { return }
+        likedIds = Set(updatedLikes)
     }
 
     private func loadNftsIgnoringFailures(ids: [String]) async -> [Nft] {

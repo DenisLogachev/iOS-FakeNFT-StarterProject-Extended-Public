@@ -13,6 +13,7 @@ struct ProfileTabView: View {
     private let profileService: ProfileService
     private let nftService: NftService
     private let myNftsStore: MyNftsStore
+    private let profileId: Int
 
     init(
         profileService: ProfileService,
@@ -23,6 +24,7 @@ struct ProfileTabView: View {
         self.profileService = profileService
         self.nftService = nftService
         self.myNftsStore = myNftsStore
+        self.profileId = profileId
 
         _viewModel = State(
             initialValue: ProfileViewModel(
@@ -38,7 +40,8 @@ struct ProfileTabView: View {
             viewModel: viewModel,
             profileService: profileService,
             nftService: nftService,
-            myNftsStore: myNftsStore
+            myNftsStore: myNftsStore,
+            profileId: profileId
         )
     }
 }

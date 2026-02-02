@@ -12,17 +12,20 @@ struct ProfileRootView: View {
     private let profileService: ProfileService
     private let nftService: NftService
     private let myNftsStore: MyNftsStore
+    private let profileId: Int
 
     init(
         viewModel: ProfileViewModel,
         profileService: ProfileService,
         nftService: NftService,
-        myNftsStore: MyNftsStore
+        myNftsStore: MyNftsStore,
+        profileId: Int
     ) {
         self.viewModel = viewModel
         self.profileService = profileService
         self.nftService = nftService
         self.myNftsStore = myNftsStore
+        self.profileId = profileId
     }
 
     var body: some View {
@@ -47,7 +50,9 @@ struct ProfileRootView: View {
             MyNftsView(
                 viewModel: MyNftsViewModel(
                     nftService: nftService,
-                    myNftsStore: myNftsStore
+                    myNftsStore: myNftsStore,
+                    profileService: profileService,
+                    profileId: profileId
                 )
             )
 

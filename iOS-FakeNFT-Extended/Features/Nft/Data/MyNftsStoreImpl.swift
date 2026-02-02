@@ -13,7 +13,6 @@ protocol MyNftsStore: Sendable {
 }
 
 actor MyNftsStoreImpl: MyNftsStore {
-    // TODO: потом заменить на UserDefaults
     private var myNftIds: [String] = [
         // TEMP: мок-данные для демонстрации экрана "Мои NFT"
         "28829968-8639-4e08-8853-2f30fcf09783",

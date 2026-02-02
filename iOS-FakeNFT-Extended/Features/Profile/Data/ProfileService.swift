@@ -10,8 +10,11 @@ import Foundation
 protocol ProfileService: Sendable {
     func cachedProfile(id: Int) async -> Profile?
     func fetchProfile(id: Int) async -> Profile?
-
     func updateProfile(id: Int, draft: ProfileEditDraft) async -> Profile?
+
+    func getProfileLikes(id: Int) async -> [String]
+    func addLikeForNft(profileId: Int, nftId: String) async -> [String]?
+    func removeLikeFromNft(profileId: Int, nftId: String) async -> [String]?
 }
 
 actor ProfileServiceImpl: ProfileService {
@@ -65,6 +68,47 @@ actor ProfileServiceImpl: ProfileService {
             return nil
         } catch {
             debugPrint("Profile update failed:", error)
+            return nil
+        }
+    }
+
+    func getProfileLikes(id: Int) async -> [String] {
+        if let cached = await storage.getProfile(id: id),
+           let likes = cached.likes {
+            return likes
+        }
+
+        let fetched = await fetchProfile(id: id)
+        return fetched?.likes ?? []
+    }
+
+    func addLikeForNft(profileId: Int, nftId: String) async -> [String]? {
+        let currentLikes = await getProfileLikes(id: profileId)
+        let newLikes = currentLikes.contains(nftId) ? currentLikes : (currentLikes + [nftId])
+        return await updateLikes(profileId: profileId, likes: newLikes)
+    }
+
+    func removeLikeFromNft(profileId: Int, nftId: String) async -> [String]? {
+        let currentLikes = await getProfileLikes(id: profileId)
+        let newLikes = currentLikes.filter { $0 != nftId }
+        return await updateLikes(profileId: profileId, likes: newLikes)
+    }
+
+    private func updateLikes(profileId: Int, likes: [String]) async -> [String]? {
+        do {
+            let request = UpdateLikesRequest(
+                id: profileId,
+                likes: likes.isEmpty ? nil : likes
+            )
+
+            let updated: Profile = try await networkClient.send(request: request)
+            await storage.saveProfile(updated, for: profileId)
+            return updated.likes ?? []
+        } catch let error as NetworkClientError {
+            debugPrint("Update likes failed:", error)
+            return nil
+        } catch {
+            debugPrint("Update likes failed:", error)
             return nil
         }
     }
