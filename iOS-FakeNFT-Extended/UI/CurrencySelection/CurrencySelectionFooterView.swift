@@ -44,3 +44,4 @@ struct CurrencySelectionFooterView: View {
         onPayTap: {}
     )
 }
+
