@@ -15,12 +15,14 @@ struct FavouriteNftCell: View {
     private enum Layout {
         static let cellSpacing: CGFloat = 12
         static let imageSize: CGFloat = 80
+        static let titleToRatingSpacing: CGFloat = 2
+        static let ratingToPriceSpacing: CGFloat = 8
         static let titleFontSize: CGFloat = 17
-        static let priceFontSize: CGFloat = 13
+        static let priceFontSize: CGFloat = 15
     }
 
     var body: some View {
-        HStack(alignment: .top, spacing: Layout.cellSpacing) {
+        HStack(alignment: .center, spacing: Layout.cellSpacing) {
             NFTPreviewLikeView(
                 imageURL: nft.images?.first,
                 isLiked: isFavourite,
@@ -29,13 +31,15 @@ struct FavouriteNftCell: View {
                 onToggleLike: onLikeTap
             )
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 0) {
                 Text(nft.name ?? "")
                     .font(.system(size: Layout.titleFontSize, weight: .bold))
                     .foregroundStyle(.ypBlack)
                     .lineLimit(1)
+                    .padding(.bottom, Layout.titleToRatingSpacing)
 
                 RatingStars(rating: nft.rating ?? 0)
+                    .padding(.bottom, Layout.ratingToPriceSpacing)
 
                 NFTPriceText(
                     price: nft.price,
@@ -47,4 +51,3 @@ struct FavouriteNftCell: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
-
