@@ -48,8 +48,6 @@ final class MyNftsViewModel {
         self.sortStorage = sortStorage
     }
 
-    // MARK: - Public API
-
     func load() async {
         await loadInternal(forceRefresh: false)
     }
