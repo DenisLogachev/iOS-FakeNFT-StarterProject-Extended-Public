@@ -9,7 +9,7 @@ import Foundation
 
 protocol ProfileService: Sendable {
     func cachedProfile(id: Int) async -> Profile?
-    func fetchProfile(id: Int) async -> Profile?
+    func fetchProfile(id: Int, forceRefresh: Bool) async -> Profile?
     func updateProfile(id: Int, draft: ProfileEditDraft) async -> Profile?
 
     func getProfileLikes(id: Int) async -> [String]
@@ -21,6 +21,8 @@ actor ProfileServiceImpl: ProfileService {
     private let networkClient: NetworkClient
     private let storage: ProfileStorage
 
+    private let cacheTTL: TimeInterval = 120
+
     init(networkClient: NetworkClient, storage: ProfileStorage) {
         self.networkClient = networkClient
         self.storage = storage
@@ -30,7 +32,19 @@ actor ProfileServiceImpl: ProfileService {
         await storage.getProfile(id: id)
     }
 
-    func fetchProfile(id: Int) async -> Profile? {
+    func fetchProfile(id: Int, forceRefresh: Bool) async -> Profile? {
+        if !forceRefresh {
+            let cached = await storage.getProfile(id: id)
+            let lastUpdated = await storage.getLastUpdated(id: id)
+
+            if let cached, let lastUpdated {
+                let age = Date().timeIntervalSince(lastUpdated)
+                if age < cacheTTL {
+                    return cached
+                }
+            }
+        }
+
         do {
             let profile: Profile = try await networkClient.send(request: ProfileRequest(id: id))
             await storage.saveProfile(profile, for: id)
@@ -48,6 +62,10 @@ actor ProfileServiceImpl: ProfileService {
             debugPrint("Profile fetch failed:", error)
             return nil
         }
+    }
+
+    func fetchProfile(id: Int) async -> Profile? {
+        await fetchProfile(id: id, forceRefresh: false)
     }
 
     func updateProfile(id: Int, draft: ProfileEditDraft) async -> Profile? {
@@ -71,14 +89,13 @@ actor ProfileServiceImpl: ProfileService {
             return nil
         }
     }
-
+    
     func getProfileLikes(id: Int) async -> [String] {
         if let cached = await storage.getProfile(id: id),
            let likes = cached.likes {
             return likes
         }
-
-        let fetched = await fetchProfile(id: id)
+        let fetched = await fetchProfile(id: id, forceRefresh: false)
         return fetched?.likes ?? []
     }
 
@@ -96,17 +113,10 @@ actor ProfileServiceImpl: ProfileService {
 
     private func updateLikes(profileId: Int, likes: [String]) async -> [String]? {
         do {
-            let request = UpdateLikesRequest(
-                id: profileId,
-                likes: likes.isEmpty ? nil : likes
-            )
-
+            let request = UpdateLikesRequest(id: profileId, likes: likes.isEmpty ? nil : likes)
             let updated: Profile = try await networkClient.send(request: request)
             await storage.saveProfile(updated, for: profileId)
             return updated.likes ?? []
-        } catch let error as NetworkClientError {
-            debugPrint("Update likes failed:", error)
-            return nil
         } catch {
             debugPrint("Update likes failed:", error)
             return nil

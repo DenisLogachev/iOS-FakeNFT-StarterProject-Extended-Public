@@ -23,6 +23,7 @@ struct RemoteImageView<Placeholder: View>: View {
 
     @State private var uiImage: UIImage?
     @State private var isLoading = false
+    @State private var loadedURLString: String?
 
     init(
         url: URL?,
@@ -44,44 +45,51 @@ struct RemoteImageView<Placeholder: View>: View {
                     .scaledToFill()
                     .transition(.opacity)
             } else {
-                ZStack {
-                    placeholder()
-                        .transition(.opacity)
+                placeholder()
+                    .transition(.opacity)
+            }
 
-                    if showsLoader, isLoading {
-                        ProgressView()
-                            .transition(.opacity)
-                    }
-                }
+            if showsLoader, isLoading {
+                ProgressView()
+                    .transition(.opacity)
             }
         }
         .animation(.easeInOut(duration: 0.2), value: uiImage != nil)
         .animation(.easeInOut(duration: 0.2), value: isLoading)
         .task(id: url?.absoluteString) {
-            await load()
+            await loadIfNeeded()
         }
     }
 
-    private func load() async {
-        guard !isLoading else { return }
-
-        await MainActor.run {
-            uiImage = nil
-        }
-        onStateChange?(.idle)
-
+    private func loadIfNeeded() async {
         guard let url else {
+            await MainActor.run {
+                uiImage = nil
+                loadedURLString = nil
+                isLoading = false
+            }
             onStateChange?(.failure)
             return
         }
 
-        isLoading = true
+        let urlString = url.absoluteString
+
+        if await MainActor.run(body: { loadedURLString == urlString && uiImage != nil }) {
+            return
+        }
+
+        let alreadyLoading = await MainActor.run { isLoading }
+        guard !alreadyLoading else { return }
+
+        await MainActor.run { isLoading = true }
         onStateChange?(.loading)
-        defer { isLoading = false }
+        defer {
+            Task { @MainActor in isLoading = false }
+        }
 
         var request = URLRequest(url: url)
-        request.cachePolicy = .reloadIgnoringLocalCacheData
         request.timeoutInterval = 20
+        request.cachePolicy = .returnCacheDataElseLoad
 
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
@@ -89,15 +97,19 @@ struct RemoteImageView<Placeholder: View>: View {
             guard let http = response as? HTTPURLResponse,
                   200..<300 ~= http.statusCode,
                   let image = UIImage(data: data) else {
-                await MainActor.run { uiImage = nil }
                 onStateChange?(.failure)
                 return
             }
 
-            await MainActor.run { uiImage = image }
+            let stillSameURL = await MainActor.run { self.url?.absoluteString == urlString }
+            guard stillSameURL else { return }
+
+            await MainActor.run {
+                uiImage = image
+                loadedURLString = urlString
+            }
             onStateChange?(.success)
         } catch {
-            await MainActor.run { uiImage = nil }
             onStateChange?(.failure)
         }
     }

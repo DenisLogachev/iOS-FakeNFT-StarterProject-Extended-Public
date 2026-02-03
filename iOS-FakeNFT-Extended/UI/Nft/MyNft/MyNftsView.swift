@@ -81,14 +81,14 @@ struct MyNftsView: View {
         case .idle:
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-
+            
         case .empty:
             Text(NSLocalizedString("MyNfts.empty", comment: ""))
                 .font(.system(size: Layout.emptyFontSize, weight: .bold))
                 .foregroundStyle(.ypBlack)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding(.horizontal, Layout.horizontalPadding)
-
+            
         case .loaded(let nfts):
             List {
                 ForEach(nfts) { nft in
@@ -107,6 +107,9 @@ struct MyNftsView: View {
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
+            .refreshable {
+                await viewModel.refresh()
+            }
         }
     }
 }

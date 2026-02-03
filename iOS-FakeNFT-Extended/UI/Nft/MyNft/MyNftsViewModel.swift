@@ -48,7 +48,35 @@ final class MyNftsViewModel {
         self.sortStorage = sortStorage
     }
 
+    // MARK: - Public API
+
     func load() async {
+        await loadInternal(forceRefresh: false)
+    }
+
+    func refresh() async {
+        await loadInternal(forceRefresh: true)
+    }
+
+    func setSortType(_ newType: MyNftsSortType) {
+        guard sortType != newType else { return }
+        sortType = newType
+        applySorting()
+
+        Task { await sortStorage.saveSortType(newType) }
+    }
+
+    func toggleLike(id: String) {
+        Task { [weak self] in
+            await self?.toggleLikeAsync(id: id)
+        }
+    }
+
+    func isLiked(id: String) -> Bool {
+        likedIds.contains(id)
+    }
+
+    private func loadInternal(forceRefresh: Bool) async {
         guard !isLoadingTaskRunning else { return }
         isLoadingTaskRunning = true
         defer { isLoadingTaskRunning = false }
@@ -61,17 +89,23 @@ final class MyNftsViewModel {
             sortType = await sortStorage.loadSortType()
         }
 
+        if forceRefresh {
+            _ = await profileService.fetchProfile(id: profileId, forceRefresh: true)
+        }
+
         let likes = await profileService.getProfileLikes(id: profileId)
         likedIds = Set(likes)
 
         let ids = await myNftsStore.getMyNftIds()
         guard !ids.isEmpty else {
+            allNfts = []
             state = .empty
             return
         }
 
-        let loadedNfts = await loadNfts(ids: ids)
+        let loadedNfts = await loadNfts(ids: ids, forceRefresh: forceRefresh)
         guard !loadedNfts.isEmpty else {
+            allNfts = []
             state = .empty
             return
         }
@@ -80,26 +114,6 @@ final class MyNftsViewModel {
         allNfts = ordered
 
         applySorting()
-    }
-
-    func setSortType(_ newType: MyNftsSortType) {
-        guard sortType != newType else { return }
-        sortType = newType
-        applySorting()
-
-        Task {
-            await sortStorage.saveSortType(newType)
-        }
-    }
-
-    func toggleLike(id: String) {
-        Task { [weak self] in
-            await self?.toggleLikeAsync(id: id)
-        }
-    }
-
-    func isLiked(id: String) -> Bool {
-        likedIds.contains(id)
     }
 
     private func applySorting() {
@@ -129,20 +143,28 @@ final class MyNftsViewModel {
         case .byPrice:
             return nfts.sorted { leftNft, rightNft in
                 switch (leftNft.price, rightNft.price) {
-                case let (leftPrice?, rightPrice?): return leftPrice < rightPrice
-                case (nil, _?): return false
-                case (_?, nil): return true
-                case (nil, nil): return false
+                case let (leftPrice?, rightPrice?):
+                    return leftPrice < rightPrice
+                case (nil, _?):
+                    return false
+                case (_?, nil):
+                    return true
+                case (nil, nil):
+                    return false
                 }
             }
 
         case .byRating:
             return nfts.sorted { leftNft, rightNft in
                 switch (leftNft.rating, rightNft.rating) {
-                case let (leftRating?, rightRating?): return leftRating > rightRating
-                case (nil, _?): return false
-                case (_?, nil): return true
-                case (nil, nil): return false
+                case let (leftRating?, rightRating?):
+                    return leftRating > rightRating
+                case (nil, _?):
+                    return false
+                case (_?, nil):
+                    return true
+                case (nil, nil):
+                    return false
                 }
             }
         }
@@ -164,11 +186,11 @@ final class MyNftsViewModel {
         likedIds = Set(updatedLikes)
     }
 
-    private func loadNfts(ids: [String]) async -> [Nft] {
+    private func loadNfts(ids: [String], forceRefresh: Bool) async -> [Nft] {
         await withTaskGroup(of: Nft?.self) { group in
             for id in ids {
                 group.addTask { [nftService] in
-                    do { return try await nftService.loadNft(id: id) }
+                    do { return try await nftService.loadNft(id: id, forceRefresh: forceRefresh) }
                     catch {
                         debugPrint("MyNfts load failed for id=\(id):", error)
                         return nil
@@ -182,6 +204,7 @@ final class MyNftsViewModel {
             for await nft in group {
                 if let nft { result.append(nft) }
             }
+
             return result
         }
     }
