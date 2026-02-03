@@ -28,7 +28,10 @@ final class FavouriteNftsViewModel {
     private var nftsById: [String: Nft] = [:]
     private var isLoadingTaskRunning = false
 
-    init(nftService: NftService, likesService: NftLikesService, profileId: Int) {
+    init(nftService: NftService,
+         likesService: NftLikesService,
+         profileId: Int)
+    {
         self.nftService = nftService
         self.likesService = likesService
         self.profileId = profileId

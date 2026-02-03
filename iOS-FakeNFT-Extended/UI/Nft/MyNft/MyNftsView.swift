@@ -102,6 +102,7 @@ struct MyNftsView: View {
                         isLiked: viewModel.isLiked(id: nft.id),
                         onToggleLike: { viewModel.toggleLike(id: nft.id) }
                     )
+                    .allowsHitTesting(!viewModel.isLikeUpdating(id: nft.id))
                     .padding(.leading, Layout.horizontalPadding)
                     .padding(.trailing, Layout.trailingPadding)
                     .padding(.vertical, Layout.verticalCellPadding)

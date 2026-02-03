@@ -24,9 +24,8 @@ final class MyNftsViewModel {
 
     private(set) var state: MyNftsState = .idle
     private(set) var isLoading: Bool = false
-    private(set) var isLikeUpdating: Bool = false
-
     private var likedIds: Set<String> = []
+    private var likeUpdatingIds: Set<String> = []
     private var isLoadingTaskRunning = false
 
     private var allNfts: [Nft] = []
@@ -72,6 +71,10 @@ final class MyNftsViewModel {
 
     func isLiked(id: String) -> Bool {
         likedIds.contains(id)
+    }
+
+    func isLikeUpdating(id: String) -> Bool {
+        likeUpdatingIds.contains(id)
     }
 
     private func loadInternal(forceRefresh: Bool) async {
@@ -169,18 +172,32 @@ final class MyNftsViewModel {
     }
 
     private func toggleLikeAsync(id: String) async {
-        guard !isLikeUpdating else { return }
-        isLikeUpdating = true
-        defer { isLikeUpdating = false }
+        guard !likeUpdatingIds.contains(id) else { return }
+        likeUpdatingIds.insert(id)
+        defer { likeUpdatingIds.remove(id) }
+
+        let wasLiked = likedIds.contains(id)
+        if wasLiked {
+            likedIds.remove(id)
+        } else {
+            likedIds.insert(id)
+        }
 
         let updatedLikes: [String]?
-        if likedIds.contains(id) {
+        if wasLiked {
             updatedLikes = await profileService.removeLikeFromNft(profileId: profileId, nftId: id)
         } else {
             updatedLikes = await profileService.addLikeForNft(profileId: profileId, nftId: id)
         }
 
-        guard let updatedLikes else { return }
+        guard let updatedLikes else {
+            if wasLiked {
+                likedIds.insert(id)
+            } else {
+                likedIds.remove(id)
+            }
+            return
+        }
         likedIds = Set(updatedLikes)
     }
 

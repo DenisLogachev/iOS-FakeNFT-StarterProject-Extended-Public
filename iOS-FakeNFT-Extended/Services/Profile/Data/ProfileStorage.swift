@@ -18,13 +18,8 @@ actor ProfileStorageImpl: ProfileStorage {
     private var memoryCache: [Int: Profile] = [:]
     private var lastUpdated: [Int: Date] = [:]
 
-    private let userDefaults: UserDefaults
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
-
-    init(userDefaults: UserDefaults = .standard) {
-        self.userDefaults = userDefaults
-    }
 
     func saveProfile(_ profile: Profile, for id: Int) async {
         memoryCache[id] = profile
@@ -32,8 +27,8 @@ actor ProfileStorageImpl: ProfileStorage {
 
         do {
             let data = try encoder.encode(profile)
-            userDefaults.set(data, forKey: profileKey(for: id))
-            userDefaults.set(Date(), forKey: updatedKey(for: id))
+            UserDefaults.standard.set(data, forKey: profileKey(for: id))
+            UserDefaults.standard.set(Date(), forKey: updatedKey(for: id))
         } catch {
             debugPrint("ProfileStorage: encode failed:", error)
         }
@@ -44,7 +39,7 @@ actor ProfileStorageImpl: ProfileStorage {
             return cached
         }
 
-        guard let data = userDefaults.data(forKey: profileKey(for: id)) else {
+        guard let data = UserDefaults.standard.data(forKey: profileKey(for: id)) else {
             return nil
         }
 
@@ -63,7 +58,7 @@ actor ProfileStorageImpl: ProfileStorage {
             return date
         }
 
-        let date = userDefaults.object(forKey: updatedKey(for: id)) as? Date
+        let date = UserDefaults.standard.object(forKey: updatedKey(for: id)) as? Date
         lastUpdated[id] = date
         return date
     }
