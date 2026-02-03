@@ -6,22 +6,22 @@ enum TabTag {
 }
 
 struct TabBarView: View {
-<<<<<<< HEAD
     @Environment(NavigationRouter.self) private var navigationRouter
     @Environment(CatalogVM.self) private var catalogVM
-    
+    @Environment(ServicesAssembly.self) var servicesAssembly
+    @State private var selectedTab = TabTag.catalog
+
     var body: some View {
         @Bindable var navigationRouter = navigationRouter
         @Bindable var catalogVM = catalogVM
-        
-        TabView {
+
+        TabView(selection: $selectedTab) {
             NavigationStack(path: $navigationRouter.path) {
                 CatalogMainView()
                     .alert("Не удалось получить данные", isPresented: $catalogVM.showError) {
                         Button("Отмена", role: .cancel) {
                             catalogVM.showError = false
                         }
-                        
                         Button("Повторить") {
                             Task { await catalogVM.refreshData() }
                         }
@@ -33,25 +33,13 @@ struct TabBarView: View {
                     systemImage: "square.stack.3d.up.fill"
                 )
             }
-=======
-    @Environment(ServicesAssembly.self) var servicesAssembly
-    @State private var selectedTab = TabTag.catalog
-
-    var body: some View {
-        TabView(selection: $selectedTab) {
-            TestCatalogView(selectedTab: $selectedTab)
-                .tabItem {
-                    Label(String(localized: "Tab.catalog"), systemImage: "square.stack.3d.up.fill")
-                }
-                .tag(TabTag.catalog)
-                .backgroundStyle(.background)
+            .tag(TabTag.catalog)
 
             OrderAssembly(servicesAssembler: servicesAssembly).build()
                 .tabItem {
                     Label(String(localized: "Tab.cart"), image: "ic_basket_tabbar")
                 }
                 .tag(TabTag.cart)
->>>>>>> epic/cart
         }
         .backgroundStyle(.background)
     }
