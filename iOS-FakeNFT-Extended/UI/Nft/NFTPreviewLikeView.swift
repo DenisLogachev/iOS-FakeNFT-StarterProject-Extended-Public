@@ -41,6 +41,6 @@ struct NFTPreviewLikeView: View {
                 .transition(.opacity)
             }
         }
-        .animation(.easeInOut(duration: 0.15), value: isImageLoaded)
+        .animation(.easeInOut(duration: 0.16), value: isImageLoaded)
     }
 }
