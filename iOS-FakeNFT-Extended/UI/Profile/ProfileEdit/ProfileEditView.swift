@@ -79,6 +79,7 @@ struct ProfileEditView: View {
                     handleBackTap()
                 } label: {
                     Image(.icBackward)
+                        .frame(width: 24, height: 24, alignment: .leading)
                 }
                 .buttonStyle(.plain)
                 .disabled(viewModel.isSaving)

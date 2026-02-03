@@ -29,7 +29,10 @@ struct ProfileView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 if case .loaded = viewModel.state {
-                    Button { viewModel.openEdit() } label: { Image(.icEdit) }
+                    Button { viewModel.openEdit() } label: {
+                        Image(.icEdit)
+                            .frame(width: 42, height: 42, alignment: .trailing)
+                    }
                 }
             }
         }

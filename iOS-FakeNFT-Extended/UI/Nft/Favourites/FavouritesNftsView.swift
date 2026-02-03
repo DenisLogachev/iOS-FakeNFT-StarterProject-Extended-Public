@@ -36,6 +36,7 @@ struct FavouriteNftsView: View {
             if viewModel.isLoading || viewModel.isLikeUpdating {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .allowsHitTesting(false)
             }
         }
         .navigationTitle(NSLocalizedString("Profile.favouriteNFT", comment: ""))
@@ -44,7 +45,10 @@ struct FavouriteNftsView: View {
         .toolbar(.hidden, for: .tabBar)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                Button { dismiss() } label: { Image(.icBackward) }
+                Button { dismiss() } label: {
+                    Image(.icBackward)
+                        .frame(width: 24, height: 24, alignment: .leading)
+                }
                     .buttonStyle(.plain)
             }
         }

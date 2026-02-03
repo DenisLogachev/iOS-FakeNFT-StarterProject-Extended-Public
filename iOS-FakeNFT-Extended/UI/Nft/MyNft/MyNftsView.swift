@@ -32,6 +32,7 @@ struct MyNftsView: View {
             if viewModel.isLoading, case .loaded = viewModel.state {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .allowsHitTesting(false)
             }
         }
         .navigationTitle(NSLocalizedString("MyNfts.title", comment: ""))
@@ -40,8 +41,11 @@ struct MyNftsView: View {
         .toolbar(.hidden, for: .tabBar)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                Button { dismiss() } label: { Image(.icBackward) }
-                    .buttonStyle(.plain)
+                Button { dismiss() } label: {
+                    Image(.icBackward)
+                        .frame(width: 24, height: 24, alignment: .leading)
+                }
+                .buttonStyle(.plain)
             }
 
             ToolbarItem(placement: .topBarTrailing) {
@@ -49,6 +53,7 @@ struct MyNftsView: View {
                     isSortDialogPresented = true
                 } label: {
                     Image(.icSort)
+                        .frame(width: 42, height: 42, alignment: .trailing)
                 }
                 .buttonStyle(.plain)
             }
