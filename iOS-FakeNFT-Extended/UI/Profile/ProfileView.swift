@@ -37,6 +37,12 @@ struct ProfileView: View {
             }
         }
         .task { await viewModel.load() }
+        .onAppear {
+            Task {
+                await viewModel.refreshMyNftsCount()
+                await viewModel.refreshLikesCount()
+            }
+        }
     }
 
     @ViewBuilder

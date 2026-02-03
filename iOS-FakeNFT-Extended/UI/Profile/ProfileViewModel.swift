@@ -61,6 +61,17 @@ final class ProfileViewModel {
         myNftsCount = ids.count
     }
 
+    func refreshLikesCount() async {
+        if let cached = await service.cachedProfile(id: profileId) {
+            applyUpdatedProfile(cached)
+            return
+        }
+
+        if let profile = await service.fetchProfile(id: profileId, forceRefresh: false) {
+            applyUpdatedProfile(profile)
+        }
+    }
+
     func setPath(_ newValue: [ProfileRoute]) { path = newValue }
     func openEdit() { path.append(.editProfile(profileId: profileId)) }
     func openMyNFTs() { path.append(.myNfts) }
