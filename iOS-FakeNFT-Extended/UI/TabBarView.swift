@@ -8,6 +8,7 @@ struct TabBarView: View {
             ProfileTabView(
                 profileService: servicesAssembly.profileService,
                 nftService: servicesAssembly.nftService,
+                nftLikesService: servicesAssembly.nftLikesService,
                 myNftsStore: servicesAssembly.myNftsStoreService
             )
             .tabItem {

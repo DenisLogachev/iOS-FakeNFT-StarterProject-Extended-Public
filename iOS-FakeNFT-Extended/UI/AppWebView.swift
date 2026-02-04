@@ -23,6 +23,7 @@ struct AppWebView: View {
                             dismiss()
                         } label: {
                             Image(.icBackward)
+                                .frame(width: 24, height: 24, alignment: .leading)
                         }
                     }
                 }
@@ -30,6 +31,7 @@ struct AppWebView: View {
             if isLoading {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .allowsHitTesting(false)
             }
         }
     }

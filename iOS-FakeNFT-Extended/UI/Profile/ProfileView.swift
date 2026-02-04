@@ -29,25 +29,36 @@ struct ProfileView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 if case .loaded = viewModel.state {
-                    Button { viewModel.openEdit() } label: { Image(.icEdit) }
+                    Button { viewModel.openEdit() } label: {
+                        Image(.icEdit)
+                            .frame(width: 42, height: 42, alignment: .trailing)
+                    }
                 }
             }
         }
         .task { await viewModel.load() }
+        .onAppear {
+            Task {
+                await viewModel.refreshMyNftsCount()
+                await viewModel.refreshLikesCount()
+            }
+        }
     }
 
     @ViewBuilder
     private var content: some View {
         switch viewModel.state {
         case .loaded(let profile):
-            VStack(alignment: .leading, spacing: 0) {
-                header(profile: profile)
-                description(profile: profile)
-                website(profile: profile)
-                menu(profile: profile)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    header(profile: profile)
+                    description(profile: profile)
+                    website(profile: profile)
+                    menu(profile: profile)
+                }
+                .padding(.horizontal, 16)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(.horizontal, 16)
-            .frame(maxWidth: .infinity, alignment: .leading)
 
         case .idle:
             ProgressView()
@@ -67,7 +78,6 @@ struct ProfileView: View {
                 .font(.system(size: 22, weight: .bold))
                 .foregroundStyle(.ypBlack)
                 .multilineTextAlignment(.leading)
-
         }
         .padding(.top, 16)
     }
@@ -99,7 +109,6 @@ struct ProfileView: View {
             .padding(.top, 8)
         }
     }
-
 
     private func menu(profile: Profile) -> some View {
         List {
@@ -139,6 +148,8 @@ struct ProfileView: View {
         RemoteImageView(url: url) {
             placeholderAvatar
         }
+        
+        .id(viewModel.avatarReloadToken)
     }
 
     private var placeholderAvatar: some View {

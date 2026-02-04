@@ -39,3 +39,11 @@
 "MyNfts.empty" = "У вас ещё нет NFT";
 "MyNfts.price" = "Цена";
 "MyNfts.author" = "От %@";
+
+"MyNfts.sort.title" = "Сортировка";
+"MyNfts.sort.close" = "Закрыть";
+"MyNfts.sort.byName" = "По названию";
+"MyNfts.sort.byPrice" = "По цене";
+"MyNfts.sort.byRating" = "По рейтингу";
+"Profile.favouriteNFT" = "Избранные NFT";
+"Profile.emptyFavNft" = "У вас ещё нет избранных NFT";

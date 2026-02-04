@@ -10,6 +10,7 @@ import SwiftUI
 struct MyNftsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel: MyNftsViewModel
+    @State private var isSortDialogPresented = false
 
     private enum Layout {
         static let horizontalPadding: CGFloat = 16
@@ -31,6 +32,7 @@ struct MyNftsView: View {
             if viewModel.isLoading, case .loaded = viewModel.state {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .allowsHitTesting(false)
             }
         }
         .navigationTitle(NSLocalizedString("MyNfts.title", comment: ""))
@@ -39,16 +41,43 @@ struct MyNftsView: View {
         .toolbar(.hidden, for: .tabBar)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                Button { dismiss() } label: { Image(.icBackward) }
-                    .buttonStyle(.plain)
+                Button { dismiss() } label: {
+                    Image(.icBackward)
+                        .frame(width: 24, height: 24, alignment: .leading)
+                }
+                .buttonStyle(.plain)
             }
 
             ToolbarItem(placement: .topBarTrailing) {
-                Button { } label: { Image(.icSort) }
-                    .buttonStyle(.plain)
+                Button {
+                    isSortDialogPresented = true
+                } label: {
+                    Image(.icSort)
+                        .frame(width: 42, height: 42, alignment: .trailing)
+                }
+                .buttonStyle(.plain)
             }
         }
         .task { await viewModel.load() }
+        .confirmationDialog(
+            NSLocalizedString("MyNfts.sort.title", comment: ""),
+            isPresented: $isSortDialogPresented,
+            titleVisibility: .visible
+        ) {
+            Button(NSLocalizedString("MyNfts.sort.byPrice", comment: "")) {
+                viewModel.setSortType(.byPrice)
+            }
+
+            Button(NSLocalizedString("MyNfts.sort.byRating", comment: "")) {
+                viewModel.setSortType(.byRating)
+            }
+
+            Button(NSLocalizedString("MyNfts.sort.byName", comment: "")) {
+                viewModel.setSortType(.byName)
+            }
+
+            Button(NSLocalizedString("MyNfts.sort.close", comment: ""), role: .cancel) { }
+        }
     }
 
     @ViewBuilder
@@ -57,14 +86,14 @@ struct MyNftsView: View {
         case .idle:
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-
+            
         case .empty:
             Text(NSLocalizedString("MyNfts.empty", comment: ""))
                 .font(.system(size: Layout.emptyFontSize, weight: .bold))
                 .foregroundStyle(.ypBlack)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding(.horizontal, Layout.horizontalPadding)
-
+            
         case .loaded(let nfts):
             List {
                 ForEach(nfts) { nft in
@@ -73,6 +102,7 @@ struct MyNftsView: View {
                         isLiked: viewModel.isLiked(id: nft.id),
                         onToggleLike: { viewModel.toggleLike(id: nft.id) }
                     )
+                    .allowsHitTesting(!viewModel.isLikeUpdating(id: nft.id))
                     .padding(.leading, Layout.horizontalPadding)
                     .padding(.trailing, Layout.trailingPadding)
                     .padding(.vertical, Layout.verticalCellPadding)
@@ -83,6 +113,9 @@ struct MyNftsView: View {
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
+            .refreshable {
+                await viewModel.refresh()
+            }
         }
     }
 }
@@ -94,110 +127,58 @@ private struct MyNftRow: View {
 
     private enum Layout {
         static let spacing: CGFloat = 20
-
         static let imageSize: CGFloat = 108
-        static let imageCornerRadius: CGFloat = 12
-
         static let priceColumnWidth: CGFloat = 85
-
         static let infoSpacing: CGFloat = 4
         static let priceSpacing: CGFloat = 2
-
         static let titleFontSize: CGFloat = 17
         static let subtitleFontSize: CGFloat = 13
     }
 
     var body: some View {
         HStack(spacing: Layout.spacing) {
-            previewSection
+            NFTPreviewLikeView(
+                imageURL: nft.images?.first,
+                isLiked: isLiked,
+                size: Layout.imageSize,
+                buttonPadding: 8,
+                onToggleLike: onToggleLike
+            )
 
-            descriptionSection
-                .frame(maxWidth: .infinity, alignment: .leading)
+            VStack(alignment: .leading, spacing: Layout.infoSpacing) {
+                Text(nft.name ?? "")
+                    .font(.system(size: Layout.titleFontSize, weight: .bold))
+                    .foregroundStyle(.ypBlack)
+                    .lineLimit(2)
+
+                RatingStars(rating: nft.rating ?? 0)
+
+                Text(
+                    String(
+                        format: NSLocalizedString("MyNfts.author", comment: ""),
+                        nft.author ?? ""
+                    )
+                )
+                .font(.system(size: Layout.subtitleFontSize, weight: .regular))
+                .foregroundStyle(.ypBlack)
+                .lineLimit(2)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             Spacer()
 
-            priceSection
-                .frame(width: Layout.priceColumnWidth, alignment: .leading)
-        }
-    }
+            VStack(alignment: .leading, spacing: Layout.priceSpacing) {
+                Text(NSLocalizedString("MyNfts.price", comment: ""))
+                    .font(.system(size: Layout.subtitleFontSize, weight: .regular))
+                    .foregroundStyle(.ypBlack)
 
-    private var previewSection: some View {
-        ZStack(alignment: .topTrailing) {
-            RemoteImageView(url: nft.images?.first) {
-                Color(.ypLightGray)
-            }
-            .frame(width: Layout.imageSize, height: Layout.imageSize)
-            .clipShape(
-                RoundedRectangle(
-                    cornerRadius: Layout.imageCornerRadius,
-                    style: .continuous
+                NFTPriceText(
+                    price: nft.price,
+                    fontSize: Layout.titleFontSize,
+                    fontWeight: .bold
                 )
-            )
-
-            Button(action: onToggleLike) {
-                Image(isLiked ? .icFavoritesSelected : .icFavoritesUnselected)
             }
-            .buttonStyle(.plain)
-            .padding(8)
-        }
-    }
-
-    private var descriptionSection: some View {
-        VStack(alignment: .leading, spacing: Layout.infoSpacing) {
-            Text(nft.name ?? "")
-                .font(.system(size: Layout.titleFontSize, weight: .bold))
-                .foregroundStyle(.ypBlack)
-                .lineLimit(2)
-
-            RatingStars(rating: nft.rating ?? 0)
-
-            Text(
-                String(
-                    format: NSLocalizedString("MyNfts.author", comment: ""),
-                    nft.author ?? ""
-                )
-            )
-            .font(.system(size: Layout.subtitleFontSize, weight: .regular))
-            .foregroundStyle(.ypBlack)
-            .lineLimit(2)
-        }
-    }
-
-    private var priceSection: some View {
-        VStack(alignment: .leading, spacing: Layout.priceSpacing) {
-            Text(NSLocalizedString("MyNfts.price", comment: ""))
-                .font(.system(size: Layout.subtitleFontSize, weight: .regular))
-                .foregroundStyle(.ypBlack)
-
-            Text("\(formatPrice(nft.price ?? 0)) ETH")
-                .font(.system(size: Layout.titleFontSize, weight: .bold))
-                .foregroundStyle(.ypBlack)
-                .lineLimit(1)
-        }
-    }
-
-    private func formatPrice(_ value: Double) -> String {
-        Self.priceFormatter.string(from: NSNumber(value: value)) ?? "\(value)"
-    }
-
-    private static let priceFormatter: NumberFormatter = {
-        let formatter = NumberFormatter()
-        formatter.decimalSeparator = ","
-        formatter.maximumFractionDigits = 2
-        formatter.minimumFractionDigits = 0
-        return formatter
-    }()
-}
-
-private struct RatingStars: View {
-    let rating: Int
-    private let maxRating = 5
-
-    var body: some View {
-        HStack(spacing: 2) {
-            ForEach(0..<maxRating, id: \.self) { index in
-                Image(index < rating ? .icStarSelected : .icStarUnselected)
-            }
+            .frame(width: Layout.priceColumnWidth, alignment: .leading)
         }
     }
 }

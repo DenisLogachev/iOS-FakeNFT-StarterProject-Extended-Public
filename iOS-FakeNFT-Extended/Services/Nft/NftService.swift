@@ -1,7 +1,13 @@
 import Foundation
 
-protocol NftService {
-    func loadNft(id: String) async throws -> Nft
+protocol NftService: Sendable {
+    func loadNft(id: String, forceRefresh: Bool) async throws -> Nft
+}
+
+extension NftService {
+    func loadNft(id: String) async throws -> Nft {
+        try await loadNft(id: id, forceRefresh: false)
+    }
 }
 
 @MainActor
@@ -15,9 +21,9 @@ final class NftServiceImpl: NftService {
         self.networkClient = networkClient
     }
 
-    func loadNft(id: String) async throws -> Nft {
-        if let nft = await storage.getNft(with: id) {
-            return nft
+    func loadNft(id: String, forceRefresh: Bool) async throws -> Nft {
+        if !forceRefresh, let cachedNft = await storage.getNft(with: id) {
+            return cachedNft
         }
 
         let request = NFTRequest(id: id)
