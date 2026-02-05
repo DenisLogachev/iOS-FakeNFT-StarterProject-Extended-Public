@@ -2,23 +2,30 @@ import SwiftUI
 
 struct TestCatalogView: View {
     @Environment(ServicesAssembly.self) var servicesAssembly
+    @Binding var selectedTab: Int
     @State private var presentingNft = false
 
     var body: some View {
         Button {
-            showNft()
+            presentingNft = true
         } label: {
             Text(Constants.openNftTitle)
                 .tint(.blue)
         }
         .backgroundStyle(.background)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    selectedTab = TabTag.cart
+                } label: {
+                    Image.icBasketTabbar
+                        .renderingMode(.original)
+                }
+            }
+        }
         .sheet(isPresented: $presentingNft) {
             NftDetailBridgeView()
         }
-    }
-
-    func showNft() {
-        presentingNft = true
     }
 }
 

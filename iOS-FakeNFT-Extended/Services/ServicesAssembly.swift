@@ -6,7 +6,7 @@ final class ServicesAssembly {
     private let networkClient: NetworkClient
     private let nftStorage: NftStorage
     private let profileStorage: ProfileStorage
-    private let myNftsStore: MyNftsStore
+    private let myNftsStoreInternal: MyNftsStore
 
     let nftService: NftService
     let profileService: ProfileService
@@ -21,7 +21,7 @@ final class ServicesAssembly {
         self.networkClient = networkClient
         self.nftStorage = nftStorage
         self.profileStorage = profileStorage
-        self.myNftsStore = myNftsStore
+        self.myNftsStoreInternal = myNftsStore
 
         let profileService = ProfileServiceImpl(networkClient: networkClient, storage: profileStorage)
 
@@ -30,5 +30,13 @@ final class ServicesAssembly {
         self.nftLikesService = NftLikesServiceImpl(profileService: profileService)
     }
 
-    var myNftsStoreService: MyNftsStore { myNftsStore }
+    var myNftsStore: MyNftsStore { myNftsStoreInternal }
+
+    var currencyService: CurrencyService {
+        CurrencyServiceImpl(networkClient: networkClient)
+    }
+
+    var orderService: OrderService {
+        OrderServiceImpl(networkClient: networkClient)
+    }
 }
