@@ -41,6 +41,7 @@ struct ProfileRootView: View {
             ProfileView(viewModel: viewModel)
                 .navigationDestination(for: ProfileRoute.self) { destination(for: $0) }
         }
+        .toolbar(viewModel.path.isEmpty ? .visible : .hidden, for: .tabBar)
     }
 
     @ViewBuilder

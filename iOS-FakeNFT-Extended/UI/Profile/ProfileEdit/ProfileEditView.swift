@@ -71,7 +71,6 @@ struct ProfileEditView: View {
             }
             .animation(.easeInOut(duration: 0.15), value: viewModel.hasChanges)
         }
-        .toolbar(.hidden, for: .tabBar)
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {

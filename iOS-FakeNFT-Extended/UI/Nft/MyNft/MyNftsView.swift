@@ -38,7 +38,6 @@ struct MyNftsView: View {
         .navigationTitle(NSLocalizedString("MyNfts.title", comment: ""))
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .tabBar)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button { dismiss() } label: {
