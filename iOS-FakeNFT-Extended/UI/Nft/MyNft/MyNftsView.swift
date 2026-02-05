@@ -128,7 +128,7 @@ private struct MyNftRow: View {
     private enum Layout {
         static let spacing: CGFloat = 20
         static let imageSize: CGFloat = 108
-        static let priceColumnWidth: CGFloat = 85
+        static let priceColumnWidth: CGFloat = 90
         static let infoSpacing: CGFloat = 4
         static let priceSpacing: CGFloat = 2
         static let titleFontSize: CGFloat = 17
