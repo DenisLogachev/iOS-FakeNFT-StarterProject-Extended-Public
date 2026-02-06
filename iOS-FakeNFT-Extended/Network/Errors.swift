@@ -43,3 +43,23 @@ enum NFTFetchError: LocalizedError {
         }
     }
 }
+
+enum APIClientError: Error {
+    case invalidURL(endPoint: APIEndpoint)
+    case transport(Error, endPoint: APIEndpoint)
+    case server(statusCode: Int, endPoint: APIEndpoint, message: String?)
+    case decoding(Error, endPoint: APIEndpoint)
+    
+    var errorDescription: String? {
+        switch self {
+        case .invalidURL(endPoint: let endPoint):
+            "Invalid URL for endpoint: \(endPoint)"
+        case .transport(let error, endPoint: let endPoint):
+            "Transport error: \(error.localizedDescription) for endpoint: \(endPoint)"
+        case .server(statusCode: let statusCode, endPoint: let endPoint, message: let message):
+            "Server returned status code \(statusCode) for endpoint: \(endPoint). Message: \(message?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "None")"
+        case .decoding(let error, endPoint: let endPoint):
+            "Decoding error: \(error.localizedDescription) for endpoint: \(endPoint)"
+        }
+    }
+}

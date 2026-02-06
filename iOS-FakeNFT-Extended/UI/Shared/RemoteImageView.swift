@@ -15,7 +15,7 @@ enum RemoteImageLoadState: Sendable {
 }
 
 struct RemoteImageView<Placeholder: View>: View {
-    let url: URL?
+    let url: String
     @ViewBuilder let placeholder: () -> Placeholder
 
     let showsLoader: Bool
@@ -26,7 +26,7 @@ struct RemoteImageView<Placeholder: View>: View {
     @State private var loadedURLString: String?
 
     init(
-        url: URL?,
+        url: String,
         showsLoader: Bool = true,
         onStateChange: (@Sendable (RemoteImageLoadState) -> Void)? = nil,
         @ViewBuilder placeholder: @escaping () -> Placeholder
@@ -56,13 +56,13 @@ struct RemoteImageView<Placeholder: View>: View {
         }
         .animation(.easeInOut(duration: 0.2), value: uiImage != nil)
         .animation(.easeInOut(duration: 0.2), value: isLoading)
-        .task(id: url?.absoluteString) {
+        .task(id: url) {
             await loadIfNeeded()
         }
     }
 
     private func loadIfNeeded() async {
-        guard let url else {
+        guard let url = URL(string: url) else {
             await MainActor.run {
                 uiImage = nil
                 loadedURLString = nil
@@ -101,7 +101,7 @@ struct RemoteImageView<Placeholder: View>: View {
                 return
             }
 
-            let stillSameURL = await MainActor.run { self.url?.absoluteString == urlString }
+            let stillSameURL = await MainActor.run { self.url == urlString }
             guard stillSameURL else { return }
 
             await MainActor.run {
