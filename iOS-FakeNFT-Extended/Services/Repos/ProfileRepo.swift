@@ -144,7 +144,7 @@ final class ProfileRepo: ProfileRepository {
         self.error = nil
         switch error {
         case .getProfileFailed:
-            let _ = try await getProfile()
+            let _ = try await getProfile(forceRefresh: true)
         case .updateProfileLikesFailed(let likedIds):
             let _ = try await updateProfileLikes(likedIds)
         case .toggleLikeFailed(let nftId):

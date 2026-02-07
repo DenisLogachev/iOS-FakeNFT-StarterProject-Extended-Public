@@ -52,7 +52,7 @@ enum APIEndpoint {
     }
     
     var body: Data? {
-        switch self {
+        return switch self {
             
         case .updateLikes(ids: let ids):
             Data("likes=\(ids.isEmpty ? "null" : ids.joined(separator: ","))".utf8)
@@ -60,8 +60,11 @@ enum APIEndpoint {
         case .updateProfile(profile: let profile):
             Data.from(params: profile.data)
             
-        case .updateCart(ids: let ids), .checkOutCart(ids: let ids):
+        case .updateCart(ids: let ids):
             Data("nfts=\(ids.isEmpty ? "null" : ids.joined(separator: ","))".utf8)
+            
+        case .checkOutCart(ids: let ids):
+            ids.isEmpty ? Data("nfts=null".utf8) : Data(ids.map { "nfts=\($0)" }.joined(separator: "&").utf8)
             
         default:
             nil

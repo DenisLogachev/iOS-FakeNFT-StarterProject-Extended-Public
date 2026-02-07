@@ -138,11 +138,11 @@ final class NFTRepo: NFTsRepository {
         self.error = nil
         switch error {
         case .getAllNFTsFailed:
-            let _ = try await getAllNFTs()
+            let _ = try await getAllNFTs(forceRefresh: true)
         case .getNFTByIdFailed(let id):
-            let _ = try await getNFT(id: id)
+            let _ = try await getNFT(id: id, forceRefresh: true)
         case .getMultipleNFTsByIdsFailed(let ids):
-            let _ = try await getNFTs(ids: ids)
+            let _ = try await getNFTs(ids: ids, forceRefresh: true)
         }
     }
     

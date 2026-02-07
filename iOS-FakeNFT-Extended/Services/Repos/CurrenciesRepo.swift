@@ -118,9 +118,9 @@ final class CurrenciesRepo: CurrencyRepository {
         self.error = nil
         switch error {
         case .getAllCurrenciesFailed:
-            let _ = try await getAllCurrencies()
+            let _ = try await getAllCurrencies(forceRefresh: true)
         case .getCurrencyByIdFailed(let id):
-            let _ = try await getCurrency(id: id)
+            let _ = try await getCurrency(id: id, forceRefresh: true)
         }
     }
     

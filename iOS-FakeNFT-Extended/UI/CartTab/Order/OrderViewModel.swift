@@ -14,12 +14,13 @@ import Combine
 final class OrderViewModel {
     
     var orderItems: [NFTItem] = []
-    var isLoading: Bool = false
+    var isLoading: Bool = true
     var loadError: String?
     
     private var cancellables = Set<AnyCancellable>()
     private let cartRepo: CartRepository
     private let nftRepo: NFTsRepository
+    private let profileRepo: ProfileRepository
     
     // MARK: - Computed Properties
     var isEmpty: Bool {
@@ -33,6 +34,7 @@ final class OrderViewModel {
     init(serviceAss: ServicesAssembly) {
         self.cartRepo = serviceAss.cartRepo
         self.nftRepo = serviceAss.nftRepo
+        self.profileRepo = serviceAss.profileRepo
         
         cartRepo.updatePublisher.onCartUpdate { [weak self] cart in
             Task { await self?.loadOrder(forceRefresh: false) }
@@ -47,11 +49,10 @@ final class OrderViewModel {
         defer { isLoading = false }
         
         do {
-            let cart = try await cartRepo.getCart(forceRefresh: false)
+            let cart = try await cartRepo.getCart(forceRefresh: forceRefresh)
             orderItems = try await nftRepo.getNFTs(ids: cart.nfts, sortOrder: .byInput, forceRefresh: forceRefresh)
         } catch {
-            loadError = networkErrorMessage(for: error)
-            orderItems = []
+            debugPrint("Loading order failed: \(error.localizedDescription)")
         }
     }
     
@@ -78,13 +79,13 @@ final class OrderViewModel {
     }
     
     func performPayment(currencyId: String) async throws {
-        let response = try await cartRepo.payForOrder(currencyId: currencyId)
-        guard response.success else {
-            throw NSError(domain: "Order", code: -1, userInfo: [
-                NSLocalizedDescriptionKey: String(localized: "Payment.error.title")
-            ])
-        }
-        _ = try? await cartRepo.updateCart(Cart(nfts: [], id: "1"))
+        guard !orderItems.isEmpty else { return }
+        let paymentResult = try await cartRepo.payForOrder(currencyId: currencyId).success
+        guard paymentResult else { throw NSError(domain: "PaymentError", code: 0, userInfo: nil) }
+        let _ = try await cartRepo.purchaseSelectedNFTs(nftIds: orderItems.map(\.id))
+        let _ = try await cartRepo.clearCart()
+        let _ = try await profileRepo.getProfile(forceRefresh: true)
+        orderItems.removeAll()
     }
     
     private func networkErrorMessage(for error: Error) -> String {

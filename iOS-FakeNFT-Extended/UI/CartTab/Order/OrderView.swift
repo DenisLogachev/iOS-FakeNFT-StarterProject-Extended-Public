@@ -52,7 +52,8 @@ struct OrderView: View {
                 }
                 .alert(String(localized: "Error.network"), isPresented: loadErrorBinding) {
                     Button(String(localized: "Error.repeat")) {
-                        Task { await viewModel.loadOrder() }
+                        viewModel.dismissLoadError()
+                        Task { await viewModel.loadOrder(forceRefresh: true) }
                     }
                     Button(String(localized: "Payment.error.cancel"), role: .cancel) {
                         viewModel.dismissLoadError()
@@ -69,8 +70,8 @@ private extension OrderView {
     func handlePayment(currencyId: String) async {
         do {
             try await viewModel.performPayment(currencyId: currencyId)
+            showCurrencySelection = false
             showPaymentSuccess = true
-            DispatchQueue.main.async { showCurrencySelection = false }
         } catch {
             viewModel.loadError = (error as NSError).localizedDescription
         }

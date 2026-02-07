@@ -115,13 +115,8 @@ final class CartRepo: CartRepository {
     /// - Parameter currencyId: Identifier of currency payment to be made.
     /// - Returns: Response with payment result.
     func payForOrder(currencyId: String) async throws -> CheckoutResponse {
-        do {
             let result = try await api.payForOrder(with: currencyId)
             return result
-        }  catch {
-            self.error = CartRepoError.paymentFailed(currencyId: currencyId)
-            throw error
-        }
     }
 
     /// Purchases selected NFTs from the cart.
@@ -154,7 +149,7 @@ final class CartRepo: CartRepository {
         self.error = nil
         switch error {
         case .getCartFailed:
-            let _ = try await getCart()
+            let _ = try await getCart(forceRefresh: true)
         case .updateCartFailed(let newCart):
             let _ = try await updateCart(newCart)
         case .paymentFailed(let currencyId):

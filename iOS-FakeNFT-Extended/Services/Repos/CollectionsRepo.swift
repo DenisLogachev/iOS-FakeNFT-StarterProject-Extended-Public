@@ -117,9 +117,9 @@ final class CollectionsRepo: CollectionsRepository {
         self.error = nil
         switch error {
         case .getAllCollectionsFailed:
-            let _ = try await getAllCollections()
+            let _ = try await getAllCollections(forceRefresh: true)
         case .getCollectionByIdFailed(let id):
-            let _ = try await getCollection(id: id)
+            let _ = try await getCollection(id: id, forceRefresh: true)
         }
     }
     
