@@ -50,9 +50,6 @@ struct OrderView: View {
                         showPaymentSuccess = false
                     })
                 }
-                .task {
-                    await viewModel.loadOrder()
-                }
                 .alert(String(localized: "Error.network"), isPresented: loadErrorBinding) {
                     Button(String(localized: "Error.repeat")) {
                         Task { await viewModel.loadOrder() }
@@ -156,5 +153,6 @@ private extension OrderView {
 
 // MARK: - Preview
 #Preview {
-    TabBarView()
+    let sas: ServicesAssembly = .init(client: MockAPIClient())
+    TabBarView(profileVM: .init(serviceAss: sas), catalogVM: .init(serviceAss: sas), orderVM: .init(serviceAss: sas))
 }

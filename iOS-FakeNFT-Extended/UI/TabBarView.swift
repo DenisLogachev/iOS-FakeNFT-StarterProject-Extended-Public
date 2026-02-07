@@ -8,12 +8,17 @@ enum TabTag {
 
 struct TabBarView: View {
     @Environment(ServicesAssembly.self) var servicesAssembly
+    
+    @State var profileVM: ProfileViewModel
+    @State var catalogVM: CatalogVM
+    @State var orderVM: OrderViewModel
+    
     @State private var selectedTab = TabTag.profile
     @State private var showErrorAlert: Bool = false
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            ProfileRootView(viewModel: .init(serviceAss: servicesAssembly))
+            ProfileRootView(viewModel: profileVM)
                 .tabItem {
                     Label(
                         NSLocalizedString("Tab.profile", comment: ""),
@@ -22,7 +27,7 @@ struct TabBarView: View {
                 }
                 .tag(TabTag.profile)
             
-            CatalogRootView(catalogVM: .init(serviceAss: servicesAssembly))
+            CatalogRootView(catalogVM: catalogVM)
                 .tabItem {
                     Label(
                         NSLocalizedString("Tab.catalog", comment: ""),
@@ -31,7 +36,7 @@ struct TabBarView: View {
                 }
                 .tag(TabTag.catalog)
             
-            OrderView(viewModel: .init(serviceAss: servicesAssembly))
+            OrderView(viewModel: orderVM)
                 .tabItem {
                     Label(String(localized: "Tab.cart"), image: "ic_basket_tabbar")
                 }
@@ -39,7 +44,7 @@ struct TabBarView: View {
         }
         .alert("Не удалось получить данные", isPresented: $showErrorAlert) {
             Button("Отмена", role: .cancel) {
-                servicesAssembly.clearErrors()
+                showErrorAlert = false
             }
             
             Button("Повторить") {
@@ -51,6 +56,11 @@ struct TabBarView: View {
         .toolbarBackground(.visible, for: .tabBar)
         .onChange(of: servicesAssembly.hasAnyError) { _, newValue in
             showErrorAlert = newValue
+        }
+        .onChange(of: selectedTab) {
+            if servicesAssembly.hasAnyError {
+                Task { await servicesAssembly.retry() }
+            }
         }
     }
 }
