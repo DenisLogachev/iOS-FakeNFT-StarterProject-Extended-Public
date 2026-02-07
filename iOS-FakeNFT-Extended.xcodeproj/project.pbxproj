@@ -42,6 +42,7 @@
 		EC83571C2F36555B00AE763C /* CheckoutResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC83571B2F36555B00AE763C /* CheckoutResponse.swift */; };
 		EC83575C2F3658B000AE763C /* RepoUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC83575B2F3658B000AE763C /* RepoUpdate.swift */; };
 		EC8357602F369BF900AE763C /* NFTSortOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC83575F2F369BF900AE763C /* NFTSortOrder.swift */; };
+		EC8357622F36BAF000AE763C /* ProfileState.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8357612F36BAF000AE763C /* ProfileState.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -98,6 +99,7 @@
 		EC83571B2F36555B00AE763C /* CheckoutResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutResponse.swift; sourceTree = "<group>"; };
 		EC83575B2F3658B000AE763C /* RepoUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepoUpdate.swift; sourceTree = "<group>"; };
 		EC83575F2F369BF900AE763C /* NFTSortOrder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFTSortOrder.swift; sourceTree = "<group>"; };
+		EC8357612F36BAF000AE763C /* ProfileState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileState.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -234,6 +236,7 @@
 				EC83571B2F36555B00AE763C /* CheckoutResponse.swift */,
 				EC8357152F36552200AE763C /* Currecy.swift */,
 				EC83575B2F3658B000AE763C /* RepoUpdate.swift */,
+				EC8357612F36BAF000AE763C /* ProfileState.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -445,6 +448,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EC8357622F36BAF000AE763C /* ProfileState.swift in Sources */,
 				EC83571A2F36554900AE763C /* Cart.swift in Sources */,
 				ABC5E1992C31F666002B4068 /* Fonts.swift in Sources */,
 				ABC5E1CF2C32041D002B4068 /* NftDetailViewController.swift in Sources */,

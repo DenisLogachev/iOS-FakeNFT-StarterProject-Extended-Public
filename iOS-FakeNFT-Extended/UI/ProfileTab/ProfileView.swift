@@ -109,7 +109,7 @@ struct ProfileView: View {
                 ProfileMenuRowContent(
                     title: String(
                         format: NSLocalizedString("Profile.menu.myNfts", comment: ""),
-                        viewModel.myNftsCount
+                        profile.nftCount
                     )
                 )
             }

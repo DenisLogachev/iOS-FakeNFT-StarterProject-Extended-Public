@@ -22,7 +22,6 @@ enum APIEndpoint {
     case currencies
     case currency(id: String)
     
-    
     var path: String {
         switch self {
         case .collections: "/api/v1/collections"

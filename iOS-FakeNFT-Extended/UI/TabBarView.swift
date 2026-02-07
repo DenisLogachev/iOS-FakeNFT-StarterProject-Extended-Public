@@ -7,14 +7,11 @@ enum TabTag {
 }
 
 struct TabBarView: View {
-    @Environment(CatalogNavRouter.self) private var navigationRouter
     @Environment(ServicesAssembly.self) var servicesAssembly
     @State private var selectedTab = TabTag.profile
     @State private var showErrorAlert: Bool = false
     
     var body: some View {
-        @Bindable var navigationRouter = navigationRouter
-        
         TabView(selection: $selectedTab) {
             ProfileRootView(viewModel: .init(serviceAss: servicesAssembly))
                 .tabItem {
