@@ -48,6 +48,7 @@ struct CatalogMainView: View {
                 BlobsView()
                     .opacity(catalogVM.isLoading ? 1 : 0)
                     .animation(.easeIn, value: catalogVM.isLoading)
+                    .allowsHitTesting(false)
             }
         }
         .padding(.horizontal, 16)

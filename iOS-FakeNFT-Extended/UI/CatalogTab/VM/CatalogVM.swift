@@ -150,8 +150,8 @@ final class CatalogVM {
         }
     }
     
-    func loadCollectionsCoverImages(for collections: [NFTCollection]) async {
-        await withThrowingTaskGroup(of: Void.self) { group in
+    func loadCollectionsCoverImages(for collections: [NFTCollection]) async throws {
+        try await withThrowingTaskGroup(of: Void.self) { group in
             for collection in collections {
                 group.addTask {
                     guard let url = URL(string: collection.cover) else {
@@ -167,6 +167,7 @@ final class CatalogVM {
                     }
                 }
             }
+            try await group.waitForAll()
         }
     }
     
@@ -193,7 +194,7 @@ final class CatalogVM {
         
         do {
             collections = try await collectionsRepo.getAllCollections(forceRefresh: false)
-            await loadCollectionsCoverImages(for: collections)
+            try await loadCollectionsCoverImages(for: collections)
         } catch {
             handleError(error)
         }
