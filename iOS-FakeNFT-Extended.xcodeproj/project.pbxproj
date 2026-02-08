@@ -22,7 +22,6 @@
 		ABC5E1B72C31FC70002B4068 /* ServicesAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABC5E1B62C31FC70002B4068 /* ServicesAssembly.swift */; };
 		ABC5E1D82C3204A9002B4068 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = ABC5E1D72C3204A9002B4068 /* Kingfisher */; };
 		ABC5E1E22C320535002B4068 /* ProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = ABC5E1E12C320535002B4068 /* ProgressHUD */; };
-		CAF350992F38BFC500E0F8B8 /* Readme.md in Sources */ = {isa = PBXBuildFile; fileRef = CAF350982F38BFBB00E0F8B8 /* Readme.md */; };
 		EC8091342F2A7C610068A333 /* NFTItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8091332F2A7C610068A333 /* NFTItem.swift */; };
 		EC8091362F2A7C7D0068A333 /* NFTCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8091352F2A7C7D0068A333 /* NFTCollection.swift */; };
 		EC80927A2F2BFB7A0068A333 /* CollectionSortOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8092792F2BFB7A0068A333 /* CollectionSortOrder.swift */; };
@@ -397,7 +396,6 @@
 				EC8357622F36BAF000AE763C /* ProfileState.swift in Sources */,
 				EC83571A2F36554900AE763C /* Cart.swift in Sources */,
 				ABC5E1992C31F666002B4068 /* Fonts.swift in Sources */,
-				CAF350992F38BFC500E0F8B8 /* Readme.md in Sources */,
 				EC8091362F2A7C7D0068A333 /* NFTCollection.swift in Sources */,
 				ABC5E1B72C31FC70002B4068 /* ServicesAssembly.swift in Sources */,
 				9212EDBA2F28AD8300E5EFE0 /* LayoutConstants.swift in Sources */,
