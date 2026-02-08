@@ -8,7 +8,7 @@ struct StatisticsRowView: View {
         HStack(alignment: .center, spacing: 12) {
             
             Text("\(index)")
-                .font(.subheadline)
+                .font(.system(size: 15, weight: .regular))
                 .foregroundStyle(.secondary)
                 .frame(width: 24, alignment: .leading)
 
@@ -25,7 +25,7 @@ struct StatisticsRowView: View {
                 Spacer()
 
                 Text("\(user.score)")
-                    .font(.headline)
+                    .font(.system(size: 22, weight: .bold))
 
             }
             .padding(.horizontal, 16)

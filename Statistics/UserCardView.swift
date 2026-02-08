@@ -26,7 +26,6 @@ struct UserCardView: View {
                 .foregroundStyle(.secondary)
 
             Button {
-                // 1/3: заглушка
             } label: {
                 Text("Перейти на сайт пользователя")
                     .frame(maxWidth: .infinity)

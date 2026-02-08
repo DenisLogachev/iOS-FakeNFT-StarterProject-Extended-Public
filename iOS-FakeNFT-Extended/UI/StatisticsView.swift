@@ -21,12 +21,12 @@ struct StatisticsView: View {
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
             .background(Color.white)
-            .navigationTitle("Статистика")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { isSortSheetPresented = true } label: {
                         Image(systemName: "line.3.horizontal")
                     }
+                    .buttonStyle(.plain)
                 }
             }
             .confirmationDialog(
