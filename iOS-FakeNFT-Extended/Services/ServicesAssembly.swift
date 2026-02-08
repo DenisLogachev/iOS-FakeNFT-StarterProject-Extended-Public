@@ -3,40 +3,49 @@ import Foundation
 @Observable
 @MainActor
 final class ServicesAssembly {
-    private let networkClient: NetworkClient
-    private let nftStorage: NftStorage
-    private let profileStorage: ProfileStorage
-    private let myNftsStoreInternal: MyNftsStore
-
-    let nftService: NftService
-    let profileService: ProfileService
-    let nftLikesService: NftLikesService
-
-    init(
-        networkClient: NetworkClient,
-        nftStorage: NftStorage,
-        profileStorage: ProfileStorage,
-        myNftsStore: MyNftsStore = MyNftsStoreImpl()
-    ) {
-        self.networkClient = networkClient
-        self.nftStorage = nftStorage
-        self.profileStorage = profileStorage
-        self.myNftsStoreInternal = myNftsStore
-
-        let profileService = ProfileServiceImpl(networkClient: networkClient, storage: profileStorage)
-
-        self.profileService = profileService
-        self.nftService = NftServiceImpl(networkClient: networkClient, storage: nftStorage)
-        self.nftLikesService = NftLikesServiceImpl(profileService: profileService)
+    private let apiClient: APIClientProtocol
+    
+    let cartRepo: CartRepository
+    let collectionsRepo: CollectionsRepository
+    let currenciesRepo: CurrenciesRepo
+    let nftRepo: NFTsRepository
+    let profileRepo: ProfileRepository
+    
+    init(client: APIClientProtocol) {
+        self.apiClient = client
+        
+        self.cartRepo = CartRepo(api: client)
+        self.collectionsRepo = CollectionsRepo(api: client)
+        self.currenciesRepo = CurrenciesRepo(api: client)
+        self.nftRepo = NFTRepo(api: client)
+        self.profileRepo = ProfileRepo(api: client)
     }
-
-    var myNftsStore: MyNftsStore { myNftsStoreInternal }
-
-    var currencyService: CurrencyService {
-        CurrencyServiceImpl(networkClient: networkClient)
+    
+    var hasAnyError: Bool {
+        cartRepo.error != nil ||
+        collectionsRepo.error != nil ||
+        nftRepo.error != nil ||
+        profileRepo.error != nil ||
+        currenciesRepo.error != nil
     }
-
-    var orderService: OrderService {
-        OrderServiceImpl(networkClient: networkClient)
+    
+    func clearErrors() {
+        cartRepo.clearError()
+        collectionsRepo.clearError()
+        nftRepo.clearError()
+        profileRepo.clearError()
+        currenciesRepo.clearError()
+    }
+    
+    func retry() async {
+        do {
+            if let error = cartRepo.error { try await cartRepo.retryAfter(error: error) }
+            if let error = collectionsRepo.error { try await collectionsRepo.retryAfter(error: error) }
+            if let error = nftRepo.error { try await nftRepo.retryAfter(error: error) }
+            if let error = profileRepo.error { try await profileRepo.retryAfter(error: error) }
+            if let error = currenciesRepo.error { try await currenciesRepo.retryAfter(error: error) }
+        } catch {
+            print("Retry failed: \(error)")
+        }
     }
 }
