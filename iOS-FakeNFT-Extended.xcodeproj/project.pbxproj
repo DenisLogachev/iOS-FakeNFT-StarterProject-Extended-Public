@@ -22,6 +22,7 @@
 		ABC5E1B72C31FC70002B4068 /* ServicesAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABC5E1B62C31FC70002B4068 /* ServicesAssembly.swift */; };
 		ABC5E1D82C3204A9002B4068 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = ABC5E1D72C3204A9002B4068 /* Kingfisher */; };
 		ABC5E1E22C320535002B4068 /* ProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = ABC5E1E12C320535002B4068 /* ProgressHUD */; };
+		CAF350992F38BFC500E0F8B8 /* Readme.md in Sources */ = {isa = PBXBuildFile; fileRef = CAF350982F38BFBB00E0F8B8 /* Readme.md */; };
 		EC8091342F2A7C610068A333 /* NFTItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8091332F2A7C610068A333 /* NFTItem.swift */; };
 		EC8091362F2A7C7D0068A333 /* NFTCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8091352F2A7C7D0068A333 /* NFTCollection.swift */; };
 		EC80927A2F2BFB7A0068A333 /* CollectionSortOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8092792F2BFB7A0068A333 /* CollectionSortOrder.swift */; };
@@ -68,6 +69,7 @@
 		ABC5E1A72C31FA90002B4068 /* DateFormatters+Presets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DateFormatters+Presets.swift"; sourceTree = "<group>"; };
 		ABC5E1B42C31FC57002B4068 /* TabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarView.swift; sourceTree = "<group>"; };
 		ABC5E1B62C31FC70002B4068 /* ServicesAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServicesAssembly.swift; sourceTree = "<group>"; };
+		CAF350982F38BFBB00E0F8B8 /* Readme.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Readme.md; sourceTree = "<group>"; };
 		EC8091332F2A7C610068A333 /* NFTItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFTItem.swift; sourceTree = "<group>"; };
 		EC8091352F2A7C7D0068A333 /* NFTCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFTCollection.swift; sourceTree = "<group>"; };
 		EC8092792F2BFB7A0068A333 /* CollectionSortOrder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionSortOrder.swift; sourceTree = "<group>"; };
@@ -128,6 +130,7 @@
 				ABC5E1852C31F5B0002B4068 /* iOS-FakeNFT-ExtendedUITests */,
 				ABC5E1692C31F5AF002B4068 /* Products */,
 				CAECD6222F24F2B0007678A1 /* docs */,
+				CAF350982F38BFBB00E0F8B8 /* Readme.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -394,6 +397,7 @@
 				EC8357622F36BAF000AE763C /* ProfileState.swift in Sources */,
 				EC83571A2F36554900AE763C /* Cart.swift in Sources */,
 				ABC5E1992C31F666002B4068 /* Fonts.swift in Sources */,
+				CAF350992F38BFC500E0F8B8 /* Readme.md in Sources */,
 				EC8091362F2A7C7D0068A333 /* NFTCollection.swift in Sources */,
 				ABC5E1B72C31FC70002B4068 /* ServicesAssembly.swift in Sources */,
 				9212EDBA2F28AD8300E5EFE0 /* LayoutConstants.swift in Sources */,
