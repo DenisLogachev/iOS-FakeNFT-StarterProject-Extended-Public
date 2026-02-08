@@ -41,7 +41,7 @@ struct CollectionView: View {
             do {
                 fetchedNFTs = try await catalogVM.loadNFTs(for: nftCollection)
             } catch {
-                //TODO: Show error
+                print("failed to load NFTs for collection: \(nftCollection.id)")
             }
         }
     }
