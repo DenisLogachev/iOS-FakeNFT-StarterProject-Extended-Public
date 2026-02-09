@@ -26,7 +26,9 @@ struct StatisticsView: View {
                     Button { isSortSheetPresented = true } label: {
                         Image(systemName: "line.3.horizontal")
                     }
+                    .tint(.primary)
                     .buttonStyle(.plain)
+                    .background(Color.clear)
                 }
             }
             .confirmationDialog(
