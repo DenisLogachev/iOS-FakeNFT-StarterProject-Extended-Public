@@ -1,0 +1,77 @@
+/* Common */
+"Common.cancel" = "Cancel";
+"Common.save" = "Save";
+
+/* Tabs */
+"Tab.catalog" = "Catalog";
+"Tab.cart" = "Cart";
+"Tab.profile" = "Profile";
+
+/* Errors */
+"Error.title" = "Error";
+"Error.network" = "A network error occurred";
+"Error.unknown" = "An unknown error occurred";
+"Error.repeat" = "Retry";
+
+/* Catalog */
+"Catalog.openNft" = "Open NFT";
+
+/* Order */
+"Order.empty.title" = "Cart is empty";
+"Order.payment.button" = "To payment";
+"Order.row.price" = "Price";
+"Order.delete.confirmation" = "Are you sure you want to remove this item from the cart?";
+"Order.delete.confirm" = "Delete";
+"Order.delete.cancel" = "Back";
+"Order.sorting.title" = "Sorting";
+"Order.sorting.byPrice" = "By price";
+"Order.sorting.byRating" = "By rating";
+"Order.sorting.byName" = "By name";
+"Order.sorting.cancel" = "Close";
+
+/* CurrencySelection */
+"CurrencySelection.title" = "Select payment method";
+"CurrencySelection.agreementText" = "By making a purchase, you agree to the";
+"CurrencySelection.termsOfUseLink" = "Terms of Use";
+"CurrencySelection.payButton" = "Pay";
+"CurrencySelection.close" = "Close";
+
+/* Payment */
+"Payment.error.title" = "Payment failed";
+"Payment.error.cancel" = "Cancel";
+"Payment.error.retry" = "Retry";
+"Payment.success.title" = "Success! Payment completed, congratulations on your purchase!";
+"Payment.success.backToCart" = "Back to cart";
+
+/* Profile */
+"Profile.name.fallback" = "No name";
+"Profile.description.fallback" = "No profile description";
+
+"Profile.menu.myNfts" = "My NFTs (%d)";
+"Profile.menu.favourites" = "Favourites NFT (%d)";
+
+"Profile.edit.name.title" = "Name";
+"Profile.edit.description.title" = "Description";
+"Profile.edit.website.title" = "Website";
+"Profile.edit.exit.title" = "Are you sure you want to leave?";
+"Profile.edit.exit.stay" = "Stay";
+"Profile.edit.exit.leave" = "Leave";
+
+"Profile.edit.photo.title" = "Profile photo";
+"Profile.edit.photo.change" = "Change photo";
+"Profile.edit.photo.delete" = "Remove photo";
+"Profile.edit.photo.url.title" = "Photo URL";
+
+/* NFT */
+"MyNfts.title" = "My NFTs";
+"MyNfts.empty" = "You don't have any NFTs yet";
+"MyNfts.price" = "Price";
+"MyNfts.author" = "By %@";
+
+"MyNfts.sort.title" = "Sorting";
+"MyNfts.sort.close" = "Close";
+"MyNfts.sort.byName" = "By name";
+"MyNfts.sort.byPrice" = "By price";
+"MyNfts.sort.byRating" = "By rating";
+"Profile.favouriteNFT" = "Favourite NFTs";
+"Profile.emptyFavNft" = "You don't have any favourite NFTs";
