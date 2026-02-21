@@ -4,22 +4,22 @@ import Observation
 @Observable
 @MainActor
 final class StatisticsViewModel {
-
+    
     var sortOption: StatisticsSortOption = .byName
     var users: [StatisticsUser] = []
-
+    
     init() {
         loadMock()
         applySort()
     }
-
+    
     func setSort(_ option: StatisticsSortOption) {
         sortOption = option
         applySort()
     }
-
+    
     // MARK: - Private
-
+    
     private func loadMock() {
         users = [
             .init(id: "1", name: "Alex",      score: 112, avatarSystemName: "person.crop.circle.fill"),
@@ -31,7 +31,7 @@ final class StatisticsViewModel {
             .init(id: "7", name: "Eric",      score: 11,  avatarSystemName: "person.crop.circle.fill")
         ]
     }
-
+    
     private func applySort() {
         switch sortOption {
         case .byName:

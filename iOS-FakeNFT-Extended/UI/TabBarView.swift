@@ -34,13 +34,11 @@ struct TabBarView: View {
                         systemImage: "square.stack.3d.up.fill"
                     )
                 }
-<<<<<<< HEAD
             StatisticsView()
                 .tabItem {
                     Label("Статистика", systemImage: "flag.2.crossed.fill")
                 }
                 .backgroundStyle(.background)
-=======
                 .tag(TabTag.catalog)
             
             OrderView(viewModel: orderVM)
@@ -68,7 +66,6 @@ struct TabBarView: View {
             if servicesAssembly.hasAnyError {
                 Task { await servicesAssembly.retry() }
             }
->>>>>>> epic/statistics
         }
     }
 }
