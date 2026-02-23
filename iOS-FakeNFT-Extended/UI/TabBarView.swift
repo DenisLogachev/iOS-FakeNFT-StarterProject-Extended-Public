@@ -34,6 +34,11 @@ struct TabBarView: View {
                         systemImage: "square.stack.3d.up.fill"
                     )
                 }
+            StatisticsView()
+                .tabItem {
+                    Label("Статистика", systemImage: "flag.2.crossed.fill")
+                }
+                .backgroundStyle(.background)
                 .tag(TabTag.catalog)
             
             OrderView(viewModel: orderVM)
