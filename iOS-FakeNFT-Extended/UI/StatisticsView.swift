@@ -2,9 +2,15 @@ import SwiftUI
 
 struct StatisticsView: View {
     
-    @State private var viewModel = StatisticsViewModel()
+    @State private var viewModel: StatisticsViewModel
     @State private var isSortSheetPresented = false
     @State private var selectedUser: StatisticsUser?
+    
+    init() {
+        let api = APIClient(baseURL: Secrets.baseURL)
+        let service = StatisticsService(api: api)
+        _viewModel = State(wrappedValue: StatisticsViewModel(service: service))
+    }
     
     var body: some View {
         NavigationStack {

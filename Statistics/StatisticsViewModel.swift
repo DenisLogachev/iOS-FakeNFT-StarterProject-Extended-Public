@@ -4,35 +4,49 @@ import Observation
 @Observable
 @MainActor
 final class StatisticsViewModel {
-    
+
+    private let service: StatisticsServiceProtocol
+
     var sortOption: StatisticsSortOption = .byName
     var users: [StatisticsUser] = []
-    
-    init() {
-        loadMock()
-        applySort()
+
+    init(service: StatisticsServiceProtocol) {
+        self.service = service
+        Task { await loadUsers() }
     }
-    
+
     func setSort(_ option: StatisticsSortOption) {
         sortOption = option
-        applySort()
+        Task { await loadUsers() }
     }
-    
+
+    func reload() {
+        Task { await loadUsers() }
+    }
+
     // MARK: - Private
-    
-    private func loadMock() {
-        users = [
-            .init(id: "1", name: "Alex",      score: 112, avatarSystemName: "person.crop.circle.fill"),
-            .init(id: "2", name: "Bill",      score: 98,  avatarSystemName: "person.crop.circle.fill"),
-            .init(id: "3", name: "Alla",      score: 72,  avatarSystemName: "person.crop.circle.fill"),
-            .init(id: "4", name: "Mads",      score: 71,  avatarSystemName: "person.crop.circle.fill"),
-            .init(id: "5", name: "Timothée",  score: 51,  avatarSystemName: "person.crop.circle.fill"),
-            .init(id: "6", name: "Lea",       score: 23,  avatarSystemName: "person.crop.circle.fill"),
-            .init(id: "7", name: "Eric",      score: 11,  avatarSystemName: "person.crop.circle.fill")
-        ]
+
+    private func loadUsers() async {
+        do {
+            let dtos = try await service.loadUsers(sortBy: sortOption, page: nil, size: nil)
+
+            users = dtos.map {
+                StatisticsUser(
+                    id: $0.id ?? UUID().uuidString,
+                    name: $0.name ?? "Unknown",
+                    score: $0.nfts?.count ?? 0,
+                    avatarSystemName: "person.crop.circle.fill"
+                )
+            }
+
+            applySortLocal()
+        } catch {
+            debugPrint("❌ Statistics load error:", error)
+            users = []
+        }
     }
-    
-    private func applySort() {
+
+    private func applySortLocal() {
         switch sortOption {
         case .byName:
             users.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
