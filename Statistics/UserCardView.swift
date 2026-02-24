@@ -9,37 +9,59 @@ struct UserCardView: View {
             VStack(alignment: .leading, spacing: 24) {
                 
                 HStack(spacing: 12) {
-                    Image(systemName: user.avatarSystemName ?? "person.crop.circle.fill")
-                        .resizable()
-                        .scaledToFit()
+                    
+                    if let avatarURL = user.avatarURL {
+                        AsyncImage(url: avatarURL) { image in
+                            image
+                                .resizable()
+                                .scaledToFill()
+                        } placeholder: {
+                            ProgressView()
+                        }
                         .frame(width: 60, height: 60)
-                        .foregroundStyle(.secondary)
+                        .clipShape(Circle())
+                    } else {
+                        Image(systemName: "person.crop.circle.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 60, height: 60)
+                            .foregroundStyle(.secondary)
+                    }
                     
                     Text(user.name)
                         .font(.system(size: 22, weight: .bold))
-                        .foregroundStyle(.primary)
                     
                     Spacer()
                 }
                 
-                Text("Описание пользователя (заглушка для 1/3). Здесь будет текст из API во 2/3.")
-                    .font(.system(size: 13))
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                
-                Button {
-                } label: {
-                    Text("Перейти на сайт пользователя")
-                        .font(.system(size: 17, weight: .regular))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
+                if let description = user.description,
+                   !description.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    
+                    Text(description)
+                        .font(.system(size: 13))
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                } else {
+                    Text("Описание отсутствует")
+                        .font(.system(size: 13))
+                        .foregroundStyle(.secondary)
                 }
-                .buttonStyle(.plain)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.primary, lineWidth: 1)
-                )
-                .foregroundStyle(.primary)
+                
+                if let website = user.website,
+                   let url = URL(string: website),
+                   !website.isEmpty {
+                    
+                    Link(destination: url) {
+                        Text("Перейти на сайт пользователя")
+                            .font(.system(size: 17))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                    }
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.primary, lineWidth: 1)
+                    )
+                }
                 
                 NavigationLink {
                     UserCollectionView(title: "Коллекция NFT", count: user.score)
@@ -47,7 +69,6 @@ struct UserCardView: View {
                     HStack {
                         Text("Коллекция NFT (\(user.score))")
                             .font(.system(size: 17, weight: .bold))
-                            .foregroundStyle(.primary)
                         
                         Spacer()
                         
@@ -59,7 +80,6 @@ struct UserCardView: View {
                     .background(Color.white)
                 }
                 .buttonStyle(.plain)
-                .frame(maxWidth: .infinity)
                 
                 Spacer()
             }
@@ -69,4 +89,3 @@ struct UserCardView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 }
-

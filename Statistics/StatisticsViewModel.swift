@@ -38,7 +38,9 @@ final class StatisticsViewModel {
                     id: $0.id ?? UUID().uuidString,
                     name: $0.name ?? "Unknown",
                     score: $0.nfts?.count ?? 0,
-                    avatarSystemName: "person.crop.circle.fill"
+                    description: $0.description,
+                    website: $0.website,
+                    avatarURL: $0.avatarURL
                 )
             }
             
