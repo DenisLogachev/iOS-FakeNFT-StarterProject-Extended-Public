@@ -96,6 +96,7 @@
 				StatisticsSortOption.swift,
 				StatisticsViewModel.swift,
 				StatisticUser.swift,
+				StatisticViewState.swift,
 				UserCardView.swift,
 				UserCollectionView.swift,
 			);
