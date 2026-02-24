@@ -36,13 +36,21 @@ actor APIClient: APIClientProtocol {
     }
     
     private func request<T: Decodable>(_ endpoint: APIEndpoint) async throws -> T {
-        guard let url = URL(string: baseURL + endpoint.path) else {
+        guard var components = URLComponents(string: baseURL + endpoint.path) else {
+            throw APIClientError.invalidURL(endPoint: endpoint)
+        }
+        if !endpoint.queryItems.isEmpty {
+            components.queryItems = endpoint.queryItems
+        }
+        guard let url = components.url else {
             throw APIClientError.invalidURL(endPoint: endpoint)
         }
         
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method
-        request.setValue(endpoint.contentType, forHTTPHeaderField: "Content-Type")
+        if endpoint.body != nil {
+            request.setValue(endpoint.contentType, forHTTPHeaderField: "Content-Type")
+        }
         request.addValue(Secrets.apiToken, forHTTPHeaderField: "X-Practicum-Mobile-Token")
         request.httpBody = endpoint.body
         
