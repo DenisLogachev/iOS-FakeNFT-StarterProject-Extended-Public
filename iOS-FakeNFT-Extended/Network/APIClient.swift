@@ -22,6 +22,8 @@ protocol APIClientProtocol {
     func fetchCurrencies() async throws -> [Currency]
     func fetchCurrency(id: String) async throws -> Currency
     func retryAfter<T: Decodable>(_ error: APIClientError) async throws -> T
+    func fetchUsers(sortBy: String?, page: Int?, size: Int?) async throws -> [UserDTO]
+    func fetchUser(id: String) async throws -> UserDTO
 }
 
 actor APIClient: APIClientProtocol {
@@ -144,6 +146,13 @@ actor APIClient: APIClientProtocol {
     func fetchCurrency(id: String) async throws -> Currency {
         try await request(.currency(id: id))
     }
+    func fetchUsers(sortBy: String?, page: Int?, size: Int?) async throws -> [UserDTO] {
+        try await request(.users(sortBy: sortBy, page: page, size: size))
+    }
+
+    func fetchUser(id: String) async throws -> UserDTO {
+        try await request(.user(id: id))
+    }
 }
 
 #if DEBUG
@@ -229,7 +238,15 @@ final class MockAPIClient: APIClientProtocol {
         try await Task.sleep(nanoseconds: delay)
         return .mock
     }
-    
+    func fetchUsers(sortBy: String?, page: Int?, size: Int?) async throws -> [UserDTO] {
+        try await Task.sleep(nanoseconds: delay)
+        return []
+    }
+
+    func fetchUser(id: String) async throws -> UserDTO {
+        try await Task.sleep(nanoseconds: delay)
+        throw NetworkError.statusCode(404)
+    }
 }
 #endif
 
