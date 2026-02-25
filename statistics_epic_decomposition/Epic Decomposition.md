@@ -54,7 +54,7 @@ Actual:
 Estimate: 0.5h
 Actual: 
 
-Итого 1/3: Estimate 8.0h / Actual 
+Итого 1/3: Estimate 8.0h / Actual 6.0h
 
 ---
 
