@@ -5,14 +5,22 @@ import Observation
 @MainActor
 final class StatisticsViewModel {
     
+    private enum StorageKey {
+        static let sortOption = "statistics.sortOption"
+    }
+    
     private let service: StatisticsServiceProtocol
     
-    var sortOption: StatisticsSortOption = .byName
+    var sortOption: StatisticsSortOption {
+        didSet { saveSortOption() }
+    }
+    
     var users: [StatisticsUser] = []
     var state: StatisticsViewState = .loading
     
     init(service: StatisticsServiceProtocol) {
         self.service = service
+        self.sortOption = Self.loadSortOption()
         Task { await loadUsers() }
     }
     
@@ -45,7 +53,6 @@ final class StatisticsViewModel {
             }
             
             applySortLocal()
-            
             state = users.isEmpty ? .empty : .content
             
         } catch {
@@ -61,5 +68,14 @@ final class StatisticsViewModel {
         case .byScore:
             users.sort { $0.score > $1.score }
         }
+    }
+    
+    private func saveSortOption() {
+        UserDefaults.standard.set(sortOption.rawValue, forKey: StorageKey.sortOption)
+    }
+    
+    private static func loadSortOption() -> StatisticsSortOption {
+        let raw = UserDefaults.standard.string(forKey: StorageKey.sortOption)
+        return StatisticsSortOption(rawValue: raw ?? "") ?? .byName
     }
 }
