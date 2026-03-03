@@ -6,6 +6,13 @@ struct UserCollectionView: View {
     let title: String
     let nftIds: [String]
     
+    @State private var viewModel: UserCollectionViewModel
+    init(title: String, nftIds: [String], service: StatisticsServiceProtocol) {
+        self.title = title
+        self.nftIds = nftIds
+        _viewModel = State(initialValue: UserCollectionViewModel(service: service, nftIds: nftIds))
+    }
+    
     private let columns = [
         GridItem(.flexible(), spacing: 12),
         GridItem(.flexible(), spacing: 12),

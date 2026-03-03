@@ -66,7 +66,8 @@ struct UserCardView: View {
                 NavigationLink {
                     UserCollectionView(
                         title: "Коллекция NFT",
-                        nftIds: user.nftIds
+                        nftIds: user.nftIds,
+                        service: StatisticsService(api: APIClient(baseURL: Secrets.baseURL))
                     )
                 } label: {
                     HStack {

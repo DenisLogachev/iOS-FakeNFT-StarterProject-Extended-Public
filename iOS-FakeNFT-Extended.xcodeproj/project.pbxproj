@@ -99,6 +99,7 @@
 				StatisticViewState.swift,
 				UserCardView.swift,
 				UserCollectionView.swift,
+				UserCollectionViewModel.swift,
 			);
 			target = ABC5E1672C31F5AF002B4068 /* iOS-FakeNFT-Extended */;
 		};
