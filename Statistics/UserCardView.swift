@@ -64,7 +64,10 @@ struct UserCardView: View {
                 }
                 
                 NavigationLink {
-                    UserCollectionView(title: "Коллекция NFT", count: user.score)
+                    UserCollectionView(
+                        title: "Коллекция NFT",
+                        nftIds: user.nftIds
+                    )
                 } label: {
                     HStack {
                         Text("Коллекция NFT (\(user.score))")

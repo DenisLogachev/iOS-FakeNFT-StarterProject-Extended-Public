@@ -4,7 +4,7 @@ import SwiftUI
 struct UserCollectionView: View {
     
     let title: String
-    let count: Int
+    let nftIds: [String]
     
     private let columns = [
         GridItem(.flexible(), spacing: 12),

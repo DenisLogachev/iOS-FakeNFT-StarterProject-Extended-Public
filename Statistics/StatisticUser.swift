@@ -8,4 +8,5 @@ struct StatisticsUser: Identifiable, Equatable, Hashable {
     let description: String?
     let website: String?
     let avatarURL: URL?
+    let nftIds: [String]
 }

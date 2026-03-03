@@ -48,7 +48,8 @@ final class StatisticsViewModel {
                     score: $0.nfts?.count ?? 0,
                     description: $0.description,
                     website: $0.website,
-                    avatarURL: $0.avatarURL
+                    avatarURL: $0.avatarURL,
+                    nftIds: $0.nfts ?? []
                 )
             }
             
