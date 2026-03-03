@@ -4,5 +4,8 @@ struct StatisticsUser: Identifiable, Equatable, Hashable {
     let id: String
     let name: String
     let score: Int
-    let avatarSystemName: String? 
+    
+    let description: String?
+    let website: String?
+    let avatarURL: URL?
 }
