@@ -56,6 +56,7 @@ struct UserCardView: View {
                             .font(.system(size: 17))
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
+                            .foregroundStyle(Color(UIColor.textPrimary))
                     }
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
