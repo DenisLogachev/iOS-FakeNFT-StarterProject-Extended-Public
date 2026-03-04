@@ -91,6 +91,7 @@
 		6F71BABE2F34BFB0002A5CBB /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				NFTCardView.swift,
 				StatisticService.swift,
 				StatisticsRowView.swift,
 				StatisticsSortOption.swift,
