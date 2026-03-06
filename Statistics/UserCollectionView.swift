@@ -4,7 +4,14 @@ import SwiftUI
 struct UserCollectionView: View {
     
     let title: String
-    let count: Int
+    let nftIds: [String]
+    
+    @State private var viewModel: UserCollectionViewModel
+    init(title: String, nftIds: [String], service: StatisticsServiceProtocol) {
+        self.title = title
+        self.nftIds = nftIds
+        _viewModel = State(initialValue: UserCollectionViewModel(service: service, nftIds: nftIds))
+    }
     
     private let columns = [
         GridItem(.flexible(), spacing: 12),
@@ -13,25 +20,41 @@ struct UserCollectionView: View {
     ]
     
     var body: some View {
-        ScrollView {
-            LazyVGrid(columns: columns, spacing: 12) {
-                ForEach(0..<6, id: \.self) { _ in
-                    VStack(alignment: .leading, spacing: 6) {
-                        RoundedRectangle(cornerRadius: 12)
-                            .frame(height: 92)
-                            .foregroundStyle(.gray.opacity(0.25))
-                        
-                        Text("NFT name")
-                            .font(.subheadline)
-                            .bold()
-                        
-                        Text("1.78 ETH")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+        Group {
+            switch viewModel.state {
+                
+            case .loading:
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                
+            case .empty:
+                Text("Коллекция пуста")
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                
+            case .error(let message):
+                VStack(spacing: 12) {
+                    Text("Ошибка загрузки")
+                    Text(message)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    
+                    Button("Повторить") {
+                        viewModel.retry()
                     }
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                
+            case .content(let nfts):
+                ScrollView {
+                    LazyVGrid(columns: columns, spacing: 28) {
+                        ForEach(nfts, id: \.id) { nft in
+                            NFTCardView(nft: nft)
+                        }
+                    }
+                    .padding()
+                }
             }
-            .padding()
         }
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)

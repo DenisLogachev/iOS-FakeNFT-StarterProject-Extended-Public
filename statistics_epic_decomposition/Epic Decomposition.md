@@ -79,4 +79,4 @@ Estimate: 0.5h
 Actual: 
 6. Проверка требований и финальные правки по ревью
 
-Итого 1/3: Estimate 5.0h / Actual 
+Итого 1/3: Estimate 5.0h / Actual 2.0h

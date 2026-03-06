@@ -56,6 +56,7 @@ struct UserCardView: View {
                             .font(.system(size: 17))
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
+                            .foregroundStyle(Color(UIColor.textPrimary))
                     }
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
@@ -64,7 +65,11 @@ struct UserCardView: View {
                 }
                 
                 NavigationLink {
-                    UserCollectionView(title: "Коллекция NFT", count: user.score)
+                    UserCollectionView(
+                        title: "Коллекция NFT",
+                        nftIds: user.nftIds,
+                        service: StatisticsService(api: APIClient(baseURL: Secrets.baseURL))
+                    )
                 } label: {
                     HStack {
                         Text("Коллекция NFT (\(user.score))")

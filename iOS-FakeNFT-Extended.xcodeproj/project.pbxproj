@@ -91,6 +91,7 @@
 		6F71BABE2F34BFB0002A5CBB /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				NFTCardView.swift,
 				StatisticService.swift,
 				StatisticsRowView.swift,
 				StatisticsSortOption.swift,
@@ -99,6 +100,7 @@
 				StatisticViewState.swift,
 				UserCardView.swift,
 				UserCollectionView.swift,
+				UserCollectionViewModel.swift,
 			);
 			target = ABC5E1672C31F5AF002B4068 /* iOS-FakeNFT-Extended */;
 		};
