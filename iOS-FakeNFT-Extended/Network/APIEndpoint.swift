@@ -21,6 +21,8 @@ enum APIEndpoint {
     case checkOutCart(ids: [String])
     case currencies
     case currency(id: String)
+    case users(sortBy: String?, page: Int?, size: Int?)
+    case user(id: String)
     
     var path: String {
         switch self {
@@ -33,6 +35,8 @@ enum APIEndpoint {
         case .payForOrder(id: let id): "/api/v1/orders/1/payment/\(id)"
         case .currencies: "/api/v1/currencies"
         case .currency(id: let id): "/api/v1/currencies/\(id)"
+        case .users: "/api/v1/users"
+        case .user(let id): "/api/v1/users/\(id)"
         }
     }
     
@@ -68,6 +72,18 @@ enum APIEndpoint {
             
         default:
             nil
+        }
+    }
+    var queryItems: [URLQueryItem] {
+        switch self {
+        case .users(let sortBy, let page, let size):
+            var items: [URLQueryItem] = []
+            if let sortBy { items.append(URLQueryItem(name: "sortBy", value: sortBy)) }
+            if let page { items.append(URLQueryItem(name: "page", value: String(page))) }
+            if let size { items.append(URLQueryItem(name: "size", value: String(size))) }
+            return items
+        default:
+            return []
         }
     }
 }
